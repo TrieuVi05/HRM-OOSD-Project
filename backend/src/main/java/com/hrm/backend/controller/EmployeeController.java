@@ -1,7 +1,8 @@
 package com.hrm.backend.controller;
 
-import com.hrm.backend.entity.Employee;
-import com.hrm.backend.repository.EmployeeRepository;
+import com.hrm.backend.dto.EmployeeRequest;
+import com.hrm.backend.dto.EmployeeResponse;
+import com.hrm.backend.service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,15 +11,36 @@ import java.util.List;
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    private final EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeResponse> getAll() {
+        return employeeService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public EmployeeResponse getById(@PathVariable Long id) {
+        return employeeService.getById(id);
+    }
+
+    @PostMapping
+    public EmployeeResponse create(@RequestBody EmployeeRequest request) {
+        return employeeService.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public EmployeeResponse update(
+            @PathVariable Long id,
+            @RequestBody EmployeeRequest request) {
+        return employeeService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        employeeService.delete(id);
     }
 }
-

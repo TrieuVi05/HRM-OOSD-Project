@@ -15,20 +15,11 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String email;
-
-    @Column(name = "full_name")
     private String fullName;
-
-    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-
     private String department;
-
     private String phone;
-
     private String position;
-
     private Double salary;
 }
