@@ -32,36 +32,39 @@ frontend/
 │   │       └── CandidateCard.jsx
 │   ├── context/                    # React Context
 │   │   └── AuthContext.jsx
-│   ├── pages/                      # Page components
-│   │   ├── auth/
+│   ├── pages/                      # Page components (tách theo role + layout)
+│   │   ├── layouts/
+│   │   │   ├── PublicLayout.jsx
+│   │   │   ├── RoleLayout.jsx
+│   │   │   ├── AdminLayout.jsx
+│   │   │   ├── ManagerLayout.jsx
+│   │   │   └── EmployeeLayout.jsx
+│   │   ├── public/
+│   │   │   ├── HomePage.jsx
 │   │   │   ├── LoginPage.jsx
+│   │   │   ├── UnauthorizedPage.jsx
 │   │   │   └── RegisterPage.jsx
-│   │   ├── dashboard/
-│   │   │   ├── AdminDashboard.jsx
-│   │   │   ├── ManagerDashboard.jsx
-│   │   │   └── EmployeeDashboard.jsx
+│   │   ├── admin/
+│   │   │   └── AdminDashboard.jsx
+│   │   ├── manager/
+│   │   │   └── ManagerDashboard.jsx
 │   │   ├── employee/
-│   │   │   ├── EmployeeListPage.jsx
-│   │   │   └── EmployeeDetailPage.jsx
-│   │   ├── department/
-│   │   │   ├── DepartmentListPage.jsx
-│   │   │   └── PositionListPage.jsx
-│   │   ├── attendance/
+│   │   │   └── EmployeeDashboard.jsx
+│   │   ├── shared/                 # Dùng chung cho nhiều role
+│   │   │   ├── EmployeesPage.jsx
+│   │   │   ├── EmployeeDetailPage.jsx
+│   │   │   ├── DepartmentsPage.jsx
+│   │   │   ├── PositionsPage.jsx
 │   │   │   ├── AttendancePage.jsx
-│   │   │   └── TimesheetPage.jsx
-│   │   ├── leave/
-│   │   │   ├── LeaveListPage.jsx
-│   │   │   └── LeaveApprovalPage.jsx
-│   │   ├── payroll/
-│   │   │   ├── PayrollListPage.jsx
-│   │   │   └── PayslipPage.jsx
-│   │   ├── performance/
-│   │   │   └── PerformanceReviewPage.jsx
-│   │   ├── recruitment/
-│   │   │   ├── RecruitmentListPage.jsx
+│   │   │   ├── TimesheetPage.jsx
+│   │   │   ├── LeavesPage.jsx
+│   │   │   ├── LeaveApprovalPage.jsx
+│   │   │   ├── PayrollPage.jsx
+│   │   │   ├── PayslipPage.jsx
+│   │   │   ├── PerformanceReviewPage.jsx
+│   │   │   ├── RecruitmentPage.jsx
 │   │   │   ├── CandidateListPage.jsx
 │   │   │   └── InterviewSchedulePage.jsx
-│   │   └── HomePage.jsx
 │   ├── services/                   # API calls
 │   │   ├── api.js
 │   │   ├── authService.js
@@ -145,26 +148,38 @@ npm run build
   - PerformanceReviewCard.jsx
   - CandidateCard.jsx
 4. **Pages (src/pages/)**
-  - HomePage.jsx
-  - LoginPage.jsx
-  - RegisterPage.jsx
-  - AdminDashboard.jsx
-  - ManagerDashboard.jsx
-  - EmployeeDashboard.jsx
-  - EmployeeListPage.jsx
-  - EmployeeDetailPage.jsx
-  - DepartmentListPage.jsx
-  - PositionListPage.jsx
-  - AttendancePage.jsx
-  - TimesheetPage.jsx
-  - LeaveListPage.jsx
-  - LeaveApprovalPage.jsx
-  - PayrollListPage.jsx
-  - PayslipPage.jsx
-  - PerformanceReviewPage.jsx
-  - RecruitmentListPage.jsx
-  - CandidateListPage.jsx
-  - InterviewSchedulePage.jsx
+  - layouts/
+    - PublicLayout.jsx
+    - RoleLayout.jsx
+    - AdminLayout.jsx
+    - ManagerLayout.jsx
+    - EmployeeLayout.jsx
+  - public/
+    - HomePage.jsx
+    - LoginPage.jsx
+    - RegisterPage.jsx
+    - UnauthorizedPage.jsx
+  - admin/
+    - AdminDashboard.jsx
+  - manager/
+    - ManagerDashboard.jsx
+  - employee/
+    - EmployeeDashboard.jsx
+  - shared/
+    - EmployeesPage.jsx
+    - EmployeeDetailPage.jsx
+    - DepartmentsPage.jsx
+    - PositionsPage.jsx
+    - AttendancePage.jsx
+    - TimesheetPage.jsx
+    - LeavesPage.jsx
+    - LeaveApprovalPage.jsx
+    - PayrollPage.jsx
+    - PayslipPage.jsx
+    - PerformanceReviewPage.jsx
+    - RecruitmentPage.jsx
+    - CandidateListPage.jsx
+    - InterviewSchedulePage.jsx
 
 ## 📚 Hướng Dẫn Chi Tiết
 
