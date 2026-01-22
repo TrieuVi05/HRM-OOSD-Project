@@ -1,18 +1,18 @@
 # Chức năng theo đề bài
 
-## 9. HRM – Employee Management System
+## Chính và chủ yếu: HRM – Employee Management System
 - Quản lý hồ sơ nhân viên.
 - Quản lý hợp đồng lao động.
 - Quản lý lịch làm việc.
 - Phân quyền truy cập.
 
-## 10. Recruitment & Candidate Tracking System
+## Phụ: Recruitment & Candidate Tracking System
 - Quản lý vị trí tuyển dụng.
 - Quản lý hồ sơ ứng viên.
 - Quản lý pipeline phỏng vấn.
 - Đánh giá ứng viên.
 
-## 11. Attendance & Timesheet Management
+## Phụ: Attendance & Timesheet Management
 - Ghi nhận giờ làm.
 - Chấm công vào/ra.
 - Tính ca làm việc.
