@@ -5,7 +5,7 @@
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
-![SQL Server](https://img.shields.io/badge/SQL%20Server-2019-red)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue)
 
 ---
 
@@ -27,9 +27,9 @@
 
 ```text
 ┌────────────────┐         ┌────────────────┐         ┌────────────────┐
-│   React. js     │  REST   │  Spring Boot   │  JDBC   │  SQL Server    │
+│   React. js     │  REST   │  Spring Boot   │  JDBC   │    MySQL       │
 │   Frontend     │ <-----> │    Backend     │ <-----> │   Database     │
-│  Port:  5173    │   API   │  Port: 8080    │         │  Port: 1433    │
+│  Port:  5173    │   API   │  Port: 8080    │         │  Port: 3306    │
 └────────────────┘         └────────────────┘         └────────────────┘
 ```
 
@@ -61,7 +61,7 @@
 └─────────────────────────────────────────────────────┘
                        ↕
 ┌─────────────────────────────────────────────────────┐
-│           Database (SQL Server)                      │
+│           Database (MySQL)                           │
 │  Employees | Departments | Attendance | Payroll     │
 └─────────────────────────────────────────────────────┘
 ```
@@ -75,7 +75,7 @@
 - **Framework:** Spring Boot 3.2.0
 - **Language:** Java 17
 - **Security:** Spring Security + JWT
-- **Database:** SQL Server 2019+
+- **Database:** MySQL 8.0+
 - **ORM:** Spring Data JPA (Hibernate)
 - **Build Tool:** Maven 3.8+
 
@@ -90,7 +90,7 @@
 
 ### Database
 
-- **DBMS:** Microsoft SQL Server 2019+
+- **DBMS:** MySQL 8.0+
 - **Design:** Relational database with normalized tables
 
 ---
@@ -127,8 +127,9 @@ HRM-EmployeeManagement/
 │   └── package.json
 │
 ├── database/
-│   ├── schema.sql
-│   └── seed-data.sql
+│   ├── scripted/
+│   │   └── database.sql
+│   └── README.md
 │
 └── docs/
     └── API_ENDPOINTS.md
@@ -268,7 +269,7 @@ GET    /api/payroll/{id}/payslip
 - Java JDK 17+
 - Maven 3.8+
 - Node.js 18+
-- SQL Server 2019+
+- MySQL 8.0+
 
 ### Bước 1: Clone Repository
 
@@ -286,8 +287,8 @@ CREATE DATABASE HRM_DB;
 Cập nhật `backend/src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=HRM_DB
-spring.datasource.username=sa
+spring.datasource.url=jdbc:mysql://localhost:3306/HRM_DB
+spring.datasource.username=root
 spring.datasource.password=YourPassword123
 ```
 

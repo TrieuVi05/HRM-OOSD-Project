@@ -1,19 +1,19 @@
 # Database
 
-Thư mục này chứa các script SQL cho hệ thống HRM.
+Thư mục này chứa các script SQL cho hệ thống HRM (MySQL).
 
 ## Nội dung
 
-- `scripted/schema.sql`: Schema đầy đủ cho SQL Server theo README và đề bài.
+- `scripted/database.sql`: Schema đầy đủ cho MySQL theo README và đề bài.
 
 ## Cách dùng nhanh
 
-1. Mở SQL Server Management Studio (SSMS).
-2. Chạy script trong `scripted/schema.sql` để tạo database và các bảng.
+1. Mở MySQL Workbench.
+2. Chạy script trong `scripted/database.sql` để tạo database và các bảng (MySQL).
 
 > Lưu ý: script sẽ tự tạo database `HRM_DB` nếu chưa có.
 
-## Chi tiết schema.sql đang làm gì
+## Chi tiết database.sql đang làm gì
 
 1. **Tạo database nếu chưa tồn tại**
 	- `CREATE DATABASE HRM_DB` (chỉ chạy khi DB chưa có).

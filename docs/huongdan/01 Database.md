@@ -2,24 +2,24 @@
 
 ## Yêu cầu
 
-- SQL Server 2019+.
+- MySQL 8.0+.
 - Tài khoản có quyền tạo database.
 
 ## Cấu hình
 
 1. Tạo database và bảng bằng script trong thư mục database:
-   - `database/scripted/schema.sql`
+   - `database/scripted/database.sql`
 2. Cập nhật cấu hình ở `backend/src/main/resources/application.properties`:
 
 ```
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=HRM_DB
-spring.datasource.username=sa
+spring.datasource.url=jdbc:mysql://localhost:3306/HRM_DB
+spring.datasource.username=root
 spring.datasource.password=YourPassword123
 ```
 
 ## Kiểm tra nhanh
 
-- Mở SSMS, kiểm tra DB `HRM_DB` đã có các bảng như `employees`, `departments`, `attendance`.
+- Mở MySQL Workbench, kiểm tra DB `HRM_DB` đã có các bảng như `employees`, `departments`, `attendance`.
 
 ## Các bảng chính
 

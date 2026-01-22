@@ -36,4 +36,4 @@ Mặc định chạy tại `http://localhost:8080`.
 ## 4. Ghi chú
 
 - Cấu hình DB nằm ở `src/main/resources/application.properties`.
-- Script SQL ở `database/scripted/schema.sql`.
+- Script SQL ở `database/scripted/database.sql`.
