@@ -7,9 +7,7 @@ import com.hrm.HRM.dto.UserResponse;
 import com.hrm.HRM.entity.User;
 import com.hrm.HRM.exception.ResourceNotFoundException;
 import com.hrm.HRM.repository.UserRepository;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.time.Instant;
 import java.util.List;
 
