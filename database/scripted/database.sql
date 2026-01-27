@@ -321,6 +321,138 @@ JOIN departments d ON d.name = 'Finance'
 JOIN positions p ON p.name = 'Accountant'
 WHERE u.username = 'employee1';
 
+INSERT INTO users (username, password_hash, email, full_name, phone, status) VALUES
+('employee2', '{noop}Employee@123', 'employee2@hrm.local', 'Employee Two', '0900000102', 'ACTIVE'),
+('employee3', '{noop}Employee@123', 'employee3@hrm.local', 'Employee Three', '0900000103', 'ACTIVE'),
+('employee4', '{noop}Employee@123', 'employee4@hrm.local', 'Employee Four', '0900000104', 'ACTIVE'),
+('employee5', '{noop}Employee@123', 'employee5@hrm.local', 'Employee Five', '0900000105', 'ACTIVE'),
+('employee6', '{noop}Employee@123', 'employee6@hrm.local', 'Employee Six', '0900000106', 'ACTIVE'),
+('employee7', '{noop}Employee@123', 'employee7@hrm.local', 'Employee Seven', '0900000107', 'ACTIVE'),
+('employee8', '{noop}Employee@123', 'employee8@hrm.local', 'Employee Eight', '0900000108', 'ACTIVE'),
+('employee9', '{noop}Employee@123', 'employee9@hrm.local', 'Employee Nine', '0900000109', 'ACTIVE'),
+('employee10', '{noop}Employee@123', 'employee10@hrm.local', 'Employee Ten', '0900000110', 'ACTIVE'),
+('employee11', '{noop}Employee@123', 'employee11@hrm.local', 'Employee Eleven', '0900000111', 'ACTIVE'),
+('employee12', '{noop}Employee@123', 'employee12@hrm.local', 'Employee Twelve', '0900000112', 'ACTIVE'),
+('employee13', '{noop}Employee@123', 'employee13@hrm.local', 'Employee Thirteen', '0900000113', 'ACTIVE'),
+('employee14', '{noop}Employee@123', 'employee14@hrm.local', 'Employee Fourteen', '0900000114', 'ACTIVE'),
+('employee15', '{noop}Employee@123', 'employee15@hrm.local', 'Employee Fifteen', '0900000115', 'ACTIVE'),
+('employee16', '{noop}Employee@123', 'employee16@hrm.local', 'Employee Sixteen', '0900000116', 'ACTIVE'),
+('employee17', '{noop}Employee@123', 'employee17@hrm.local', 'Employee Seventeen', '0900000117', 'ACTIVE'),
+('employee18', '{noop}Employee@123', 'employee18@hrm.local', 'Employee Eighteen', '0900000118', 'ACTIVE'),
+('employee19', '{noop}Employee@123', 'employee19@hrm.local', 'Employee Nineteen', '0900000119', 'ACTIVE'),
+('employee20', '{noop}Employee@123', 'employee20@hrm.local', 'Employee Twenty', '0900000120', 'ACTIVE'),
+('employee21', '{noop}Employee@123', 'employee21@hrm.local', 'Employee Twenty One', '0900000121', 'ACTIVE'),
+('employee22', '{noop}Employee@123', 'employee22@hrm.local', 'Employee Twenty Two', '0900000122', 'ACTIVE'),
+('employee23', '{noop}Employee@123', 'employee23@hrm.local', 'Employee Twenty Three', '0900000123', 'ACTIVE'),
+('employee24', '{noop}Employee@123', 'employee24@hrm.local', 'Employee Twenty Four', '0900000124', 'ACTIVE'),
+('employee25', '{noop}Employee@123', 'employee25@hrm.local', 'Employee Twenty Five', '0900000125', 'ACTIVE'),
+('employee26', '{noop}Employee@123', 'employee26@hrm.local', 'Employee Twenty Six', '0900000126', 'ACTIVE'),
+('employee27', '{noop}Employee@123', 'employee27@hrm.local', 'Employee Twenty Seven', '0900000127', 'ACTIVE'),
+('employee28', '{noop}Employee@123', 'employee28@hrm.local', 'Employee Twenty Eight', '0900000128', 'ACTIVE'),
+('employee29', '{noop}Employee@123', 'employee29@hrm.local', 'Employee Twenty Nine', '0900000129', 'ACTIVE'),
+('employee30', '{noop}Employee@123', 'employee30@hrm.local', 'Employee Thirty', '0900000130', 'ACTIVE'),
+('employee31', '{noop}Employee@123', 'employee31@hrm.local', 'Employee Thirty One', '0900000131', 'ACTIVE');
+
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u JOIN roles r
+WHERE r.name = 'EMPLOYEE'
+    AND u.username IN (
+        'employee2','employee3','employee4','employee5','employee6','employee7','employee8','employee9','employee10','employee11',
+        'employee12','employee13','employee14','employee15','employee16','employee17','employee18','employee19','employee20','employee21',
+        'employee22','employee23','employee24','employee25','employee26','employee27','employee28','employee29','employee30','employee31'
+    );
+
+INSERT INTO employees (employee_code, user_id, department_id, position_id, email, full_name, date_of_birth, phone, address, hire_date, contract_type, salary, department, position)
+SELECT 'EMP004', u.id, d.id, p.id, 'employee2@hrm.local', 'Employee Two', '1997-02-02', '0900000102', 'HCMC', '2023-02-01', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee2'
+UNION ALL
+SELECT 'EMP005', u.id, d.id, p.id, 'employee3@hrm.local', 'Employee Three', '1997-03-03', '0900000103', 'HCMC', '2023-02-02', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee3'
+UNION ALL
+SELECT 'EMP006', u.id, d.id, p.id, 'employee4@hrm.local', 'Employee Four', '1997-04-04', '0900000104', 'HCMC', '2023-02-03', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee4'
+UNION ALL
+SELECT 'EMP007', u.id, d.id, p.id, 'employee5@hrm.local', 'Employee Five', '1997-05-05', '0900000105', 'HCMC', '2023-02-04', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee5'
+UNION ALL
+SELECT 'EMP008', u.id, d.id, p.id, 'employee6@hrm.local', 'Employee Six', '1997-06-06', '0900000106', 'HCMC', '2023-02-05', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee6'
+UNION ALL
+SELECT 'EMP009', u.id, d.id, p.id, 'employee7@hrm.local', 'Employee Seven', '1997-07-07', '0900000107', 'HCMC', '2023-02-06', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee7'
+UNION ALL
+SELECT 'EMP010', u.id, d.id, p.id, 'employee8@hrm.local', 'Employee Eight', '1997-08-08', '0900000108', 'HCMC', '2023-02-07', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee8'
+UNION ALL
+SELECT 'EMP011', u.id, d.id, p.id, 'employee9@hrm.local', 'Employee Nine', '1997-09-09', '0900000109', 'HCMC', '2023-02-08', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee9'
+UNION ALL
+SELECT 'EMP012', u.id, d.id, p.id, 'employee10@hrm.local', 'Employee Ten', '1997-10-10', '0900000110', 'HCMC', '2023-02-09', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee10'
+UNION ALL
+SELECT 'EMP013', u.id, d.id, p.id, 'employee11@hrm.local', 'Employee Eleven', '1997-11-11', '0900000111', 'HCMC', '2023-02-10', 'FULL_TIME', 2000, 'IT', 'Software Engineer'
+FROM users u JOIN departments d ON d.name = 'IT' JOIN positions p ON p.name = 'Software Engineer' WHERE u.username = 'employee11'
+UNION ALL
+SELECT 'EMP014', u.id, d.id, p.id, 'employee12@hrm.local', 'Employee Twelve', '1995-12-12', '0900000112', 'HCMC', '2023-03-01', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee12'
+UNION ALL
+SELECT 'EMP015', u.id, d.id, p.id, 'employee13@hrm.local', 'Employee Thirteen', '1995-01-13', '0900000113', 'HCMC', '2023-03-02', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee13'
+UNION ALL
+SELECT 'EMP016', u.id, d.id, p.id, 'employee14@hrm.local', 'Employee Fourteen', '1995-02-14', '0900000114', 'HCMC', '2023-03-03', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee14'
+UNION ALL
+SELECT 'EMP017', u.id, d.id, p.id, 'employee15@hrm.local', 'Employee Fifteen', '1995-03-15', '0900000115', 'HCMC', '2023-03-04', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee15'
+UNION ALL
+SELECT 'EMP018', u.id, d.id, p.id, 'employee16@hrm.local', 'Employee Sixteen', '1995-04-16', '0900000116', 'HCMC', '2023-03-05', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee16'
+UNION ALL
+SELECT 'EMP019', u.id, d.id, p.id, 'employee17@hrm.local', 'Employee Seventeen', '1995-05-17', '0900000117', 'HCMC', '2023-03-06', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee17'
+UNION ALL
+SELECT 'EMP020', u.id, d.id, p.id, 'employee18@hrm.local', 'Employee Eighteen', '1995-06-18', '0900000118', 'HCMC', '2023-03-07', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee18'
+UNION ALL
+SELECT 'EMP021', u.id, d.id, p.id, 'employee19@hrm.local', 'Employee Nineteen', '1995-07-19', '0900000119', 'HCMC', '2023-03-08', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee19'
+UNION ALL
+SELECT 'EMP022', u.id, d.id, p.id, 'employee20@hrm.local', 'Employee Twenty', '1995-08-20', '0900000120', 'HCMC', '2023-03-09', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee20'
+UNION ALL
+SELECT 'EMP023', u.id, d.id, p.id, 'employee21@hrm.local', 'Employee Twenty One', '1995-09-21', '0900000121', 'HCMC', '2023-03-10', 'FULL_TIME', 2200, 'HR', 'HR Manager'
+FROM users u JOIN departments d ON d.name = 'HR' JOIN positions p ON p.name = 'HR Manager' WHERE u.username = 'employee21'
+UNION ALL
+SELECT 'EMP024', u.id, d.id, p.id, 'employee22@hrm.local', 'Employee Twenty Two', '1993-10-22', '0900000122', 'HCMC', '2023-04-01', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee22'
+UNION ALL
+SELECT 'EMP025', u.id, d.id, p.id, 'employee23@hrm.local', 'Employee Twenty Three', '1993-11-23', '0900000123', 'HCMC', '2023-04-02', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee23'
+UNION ALL
+SELECT 'EMP026', u.id, d.id, p.id, 'employee24@hrm.local', 'Employee Twenty Four', '1993-12-24', '0900000124', 'HCMC', '2023-04-03', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee24'
+UNION ALL
+SELECT 'EMP027', u.id, d.id, p.id, 'employee25@hrm.local', 'Employee Twenty Five', '1993-01-25', '0900000125', 'HCMC', '2023-04-04', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee25'
+UNION ALL
+SELECT 'EMP028', u.id, d.id, p.id, 'employee26@hrm.local', 'Employee Twenty Six', '1993-02-26', '0900000126', 'HCMC', '2023-04-05', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee26'
+UNION ALL
+SELECT 'EMP029', u.id, d.id, p.id, 'employee27@hrm.local', 'Employee Twenty Seven', '1993-03-27', '0900000127', 'HCMC', '2023-04-06', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee27'
+UNION ALL
+SELECT 'EMP030', u.id, d.id, p.id, 'employee28@hrm.local', 'Employee Twenty Eight', '1993-04-28', '0900000128', 'HCMC', '2023-04-07', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee28'
+UNION ALL
+SELECT 'EMP031', u.id, d.id, p.id, 'employee29@hrm.local', 'Employee Twenty Nine', '1993-05-29', '0900000129', 'HCMC', '2023-04-08', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee29'
+UNION ALL
+SELECT 'EMP032', u.id, d.id, p.id, 'employee30@hrm.local', 'Employee Thirty', '1993-06-30', '0900000130', 'HCMC', '2023-04-09', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee30'
+UNION ALL
+SELECT 'EMP033', u.id, d.id, p.id, 'employee31@hrm.local', 'Employee Thirty One', '1993-07-31', '0900000131', 'HCMC', '2023-04-10', 'FULL_TIME', 1800, 'Finance', 'Accountant'
+FROM users u JOIN departments d ON d.name = 'Finance' JOIN positions p ON p.name = 'Accountant' WHERE u.username = 'employee31';
+
 INSERT INTO work_schedules (name, start_time, end_time, days_of_week, description)
 VALUES ('Office Hours', '08:30:00', '17:30:00', 'Mon-Fri', 'Standard office schedule');
 
