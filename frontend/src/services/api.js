@@ -35,6 +35,7 @@ export const api = {
   createUser: (payload) => request("/api/users", { method: "POST", body: payload }),
   getUsers: (token) => request("/api/users", { token }),
   getRoles: (token) => request("/api/roles", { token }),
+  updateUser: (token, id, payload) => request(`/api/users/${id}`, { method: "PUT", token, body: payload }),
   getEmployees: (token) => request("/api/employees", { token }),
   createEmployee: (token, payload) => request("/api/employees", { method: "POST", token, body: payload }),
   getDepartments: (token) => request("/api/departments", { token }),

@@ -12,4 +12,5 @@ public class UserRequest {
     private String fullName;
     private String phone;
     private String status;
+    private String roleName;
 }

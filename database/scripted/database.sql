@@ -545,3 +545,10 @@ SELECT id, '2026-01-27', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
 INSERT INTO attendance (employee_id, work_date, status)
 SELECT id, '2026-01-28', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
 
+-- =========================
+-- Dev: Seed payroll for January 2026
+-- =========================
+INSERT INTO payroll (employee_id, period_start, period_end, basic_salary, allowance, bonus, deduction, status)
+SELECT id, '2026-01-01', '2026-01-31', COALESCE(salary, 0), 0, 0, 0, 'PAID'
+FROM employees;
+

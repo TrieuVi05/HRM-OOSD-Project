@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import Modal from "../../components/common/Modal.jsx";
 
 function formatCurrency(value) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value || 0);
+  const formatted = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(value || 0);
+  return `${formatted}k ₫`;
 }
 
 function toMonthValue(date) {
@@ -21,6 +23,7 @@ export default function PayrollPage() {
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(toMonthValue(new Date()));
   const [activeTab, setActiveTab] = useState("payroll");
+  const [selectedPayroll, setSelectedPayroll] = useState(null);
 
   useEffect(() => {
     let ignore = false;
@@ -68,6 +71,9 @@ export default function PayrollPage() {
     },
     { base: 0, allowance: 0, deduction: 0, net: 0 }
   );
+
+  const openPayslip = (item) => setSelectedPayroll(item);
+  const closePayslip = () => setSelectedPayroll(null);
 
   if (loading) return <div style={{ padding: 16, fontSize: 12 }}>Loading ...</div>;
   if (error) return <div style={{ padding: 16, color: "#dc2626", fontSize: 12 }}>{error}</div>;
@@ -179,8 +185,13 @@ export default function PayrollPage() {
                           </span>
                         </td>
                         <td style={{ padding: "8px 6px" }}>
-                          <button style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "4px 8px", fontSize: 12, cursor: "pointer" }}>View</button>
-                        </td>
+                            <button
+                              onClick={() => openPayslip(item)}
+                              style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "4px 8px", fontSize: 12, cursor: "pointer" }}
+                            >
+                              View
+                            </button>
+                          </td>
                       </tr>
                     );
                   })
@@ -197,6 +208,75 @@ export default function PayrollPage() {
           <p style={{ marginTop: 8, color: "#6b7280", fontSize: 12 }}>This section will host payroll analytics and exportable reports.</p>
         </div>
       )}
+
+      <Modal isOpen={!!selectedPayroll} onClose={closePayslip} title="Employee Payslip" maxWidth={520}>
+        {selectedPayroll && (() => {
+          const emp = employeeMap.get(selectedPayroll.employeeId) || selectedPayroll.employee;
+          const net = selectedPayroll.netSalary ?? (Number(selectedPayroll.basicSalary || 0) + Number(selectedPayroll.allowance || 0) + Number(selectedPayroll.bonus || 0) - Number(selectedPayroll.deduction || 0));
+          const period = toMonthValue(selectedPayroll.periodStart) || selectedMonth || "";
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontWeight: 700, fontSize: 16 }}>Company Name</div>
+                <div style={{ fontSize: 12, color: "#6b7280" }}>Payslip for {period}</div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, fontSize: 12 }}>
+                <div>
+                  <div style={{ color: "#6b7280" }}>Employee Name</div>
+                  <div style={{ fontWeight: 600 }}>{emp?.fullName || `Employee #${selectedPayroll.employeeId}`}</div>
+                </div>
+                <div>
+                  <div style={{ color: "#6b7280" }}>Employee ID</div>
+                  <div style={{ fontWeight: 600 }}>{emp?.employeeCode || `EMP${selectedPayroll.employeeId}`}</div>
+                </div>
+                <div>
+                  <div style={{ color: "#6b7280" }}>Department</div>
+                  <div style={{ fontWeight: 600 }}>{emp?.department || "-"}</div>
+                </div>
+                <div>
+                  <div style={{ color: "#6b7280" }}>Pay Period</div>
+                  <div style={{ fontWeight: 600 }}>{period || "-"}</div>
+                </div>
+              </div>
+
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12 }}>
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>Earnings</div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
+                  <span>Base Salary</span>
+                  <span>{formatCurrency(selectedPayroll.basicSalary)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
+                  <span>Allowances</span>
+                  <span>{formatCurrency(selectedPayroll.allowance)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 600, paddingTop: 6, borderTop: "1px solid #f3f4f6" }}>
+                  <span>Gross Salary</span>
+                  <span>{formatCurrency(Number(selectedPayroll.basicSalary || 0) + Number(selectedPayroll.allowance || 0) + Number(selectedPayroll.bonus || 0))}</span>
+                </div>
+              </div>
+
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12 }}>
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>Deductions</div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                  <span>Tax & Others</span>
+                  <span>{formatCurrency(selectedPayroll.deduction)}</span>
+                </div>
+              </div>
+
+              <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 12, padding: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontWeight: 700 }}>Net Salary</div>
+                <div style={{ fontWeight: 700, color: "#2563eb", fontSize: 16 }}>{formatCurrency(net)}</div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <button onClick={closePayslip} style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>Close</button>
+                <button style={{ border: "1px solid #111827", background: "#111827", color: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>Download PDF</button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }

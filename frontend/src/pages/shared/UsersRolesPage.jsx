@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import Modal from "../../components/common/Modal.jsx";
 
 function formatDateTime(value) {
   if (!value) return "";
@@ -15,6 +16,15 @@ export default function UsersRolesPage() {
   const [roles, setRoles] = useState([]);
   const [activeTab, setActiveTab] = useState("users");
   const [searchTerm, setSearchTerm] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editUser, setEditUser] = useState(null);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    role: "",
+    status: "ACTIVE"
+  });
+  const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -49,6 +59,46 @@ export default function UsersRolesPage() {
       )
     );
   }, [users, searchTerm]);
+
+  const openEdit = (user) => {
+    const userRole = Array.isArray(user.roles) && user.roles.length > 0 ? user.roles[0] : "";
+    setEditUser(user);
+    setFormData({
+      username: user.username || "",
+      email: user.email || "",
+      role: userRole || roles[0]?.name || "",
+      status: (user.status || "ACTIVE").toUpperCase()
+    });
+    setFormError("");
+    setEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    setEditOpen(false);
+    setEditUser(null);
+    setFormError("");
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editUser) return;
+    if (!formData.username || !formData.email) {
+      setFormError("Vui lòng nhập username và email.");
+      return;
+    }
+    try {
+      const payload = {
+        username: formData.username,
+        email: formData.email,
+        status: formData.status,
+        roleName: formData.role
+      };
+      const updated = await api.updateUser(token, editUser.id, payload);
+      setUsers((prev) => prev.map((item) => (item.id === editUser.id ? { ...item, ...updated } : item)));
+      closeEdit();
+    } catch (err) {
+      setFormError(err.message || "Không thể cập nhật người dùng");
+    }
+  };
 
   if (loading) return <div style={{ padding: 16, fontSize: 12 }}>Loading ...</div>;
   if (error) return <div style={{ padding: 16, color: "#dc2626", fontSize: 12 }}>{error}</div>;
@@ -140,7 +190,7 @@ export default function UsersRolesPage() {
                       <td style={{ padding: "8px 6px", fontWeight: 600 }}>{user.username}</td>
                       <td style={{ padding: "8px 6px" }}>{user.email}</td>
                       <td style={{ padding: "8px 6px" }}>
-                        <span style={{ padding: "2px 8px", borderRadius: 999, background: "#f3f4f6", fontSize: 11 }}>N/A</span>
+                        <span style={{ padding: "2px 8px", borderRadius: 999, background: "#f3f4f6", fontSize: 11 }}>{(user.roles && user.roles[0]) || "N/A"}</span>
                       </td>
                       <td style={{ padding: "8px 6px" }}>
                         <span style={{ padding: "2px 8px", borderRadius: 999, background: user.status === "ACTIVE" ? "#dcfce7" : "#f3f4f6", color: user.status === "ACTIVE" ? "#166534" : "#6b7280", fontSize: 11 }}>
@@ -150,7 +200,12 @@ export default function UsersRolesPage() {
                       <td style={{ padding: "8px 6px" }}>{formatDateTime(user.createdAt)}</td>
                       <td style={{ padding: "8px 6px" }}>
                         <div style={{ display: "flex", gap: 6 }}>
-                          <button style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "4px 8px", fontSize: 12, cursor: "pointer" }}>✏️</button>
+                          <button
+                            onClick={() => openEdit(user)}
+                            style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "4px 8px", fontSize: 12, cursor: "pointer" }}
+                          >
+                            ✏️
+                          </button>
                           <button style={{ border: "1px solid #ef4444", background: "#fff", color: "#ef4444", borderRadius: 8, padding: "4px 8px", fontSize: 12, cursor: "pointer" }}>🗑️</button>
                         </div>
                       </td>
@@ -187,6 +242,67 @@ export default function UsersRolesPage() {
           <p style={{ marginTop: 8, color: "#6b7280", fontSize: 12 }}>This section is ready for future configuration.</p>
         </div>
       )}
+
+      <Modal isOpen={editOpen} onClose={closeEdit} title="Edit User" maxWidth={520}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600 }}>Username *</label>
+            <input
+              type="text"
+              value={formData.username}
+              onChange={(e) => setFormData((prev) => ({ ...prev, username: e.target.value }))}
+              style={{ width: "100%", marginTop: 6, borderRadius: 8, border: "1px solid #e5e7eb", padding: "8px 10px", fontSize: 12 }}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600 }}>Email *</label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+              style={{ width: "100%", marginTop: 6, borderRadius: 8, border: "1px solid #e5e7eb", padding: "8px 10px", fontSize: 12 }}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600 }}>Role *</label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
+              style={{ width: "100%", marginTop: 6, borderRadius: 8, border: "1px solid #e5e7eb", padding: "8px 10px", fontSize: 12 }}
+            >
+              {roles.map((role) => (
+                <option key={role.id} value={role.name}>{role.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600 }}>Status</label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
+              style={{ width: "100%", marginTop: 6, borderRadius: 8, border: "1px solid #e5e7eb", padding: "8px 10px", fontSize: 12 }}
+            >
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+          {formError && <div style={{ color: "#dc2626", fontSize: 12 }}>{formError}</div>}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 4 }}>
+            <button
+              onClick={closeEdit}
+              style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              style={{ border: "1px solid #111827", background: "#111827", color: "#fff", borderRadius: 8, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

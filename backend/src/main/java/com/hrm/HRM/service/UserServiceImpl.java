@@ -1,24 +1,35 @@
 package com.hrm.HRM.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.HRM.dto.UserRequest;
 import com.hrm.HRM.dto.UserResponse;
+import com.hrm.HRM.entity.Role;
 import com.hrm.HRM.entity.User;
+import com.hrm.HRM.entity.UserRole;
+import com.hrm.HRM.entity.UserRoleId;
 import com.hrm.HRM.exception.ResourceNotFoundException;
+import com.hrm.HRM.repository.RoleRepository;
 import com.hrm.HRM.repository.UserRepository;
+import com.hrm.HRM.repository.UserRoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRoleRepository userRoleRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
@@ -42,7 +53,9 @@ public class UserServiceImpl implements UserService {
         if (user.getCreatedAt() == null) {
             user.setCreatedAt(Instant.now());
         }
-        return mapToResponse(repository.save(user));
+        User saved = repository.save(user);
+        updateUserRole(saved.getId(), request.getRoleName());
+        return mapToResponse(saved);
     }
 
     @Override
@@ -58,7 +71,9 @@ public class UserServiceImpl implements UserService {
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setStatus(request.getStatus());
-        return mapToResponse(repository.save(user));
+        User saved = repository.save(user);
+        updateUserRole(saved.getId(), request.getRoleName());
+        return mapToResponse(saved);
     }
 
     @Override
@@ -86,6 +101,25 @@ public class UserServiceImpl implements UserService {
         response.setPhone(user.getPhone());
         response.setStatus(user.getStatus());
         response.setCreatedAt(user.getCreatedAt());
+        response.setRoles(userRoleRepository.findByIdUserId(user.getId())
+                .stream()
+                .map(UserRole::getRole)
+                .map(Role::getName)
+                .toList());
         return response;
+    }
+
+    private void updateUserRole(Long userId, String roleName) {
+        if (roleName == null || roleName.isBlank()) return;
+        Role role = roleRepository.findByName(roleName);
+        if (role == null) return;
+        userRoleRepository.deleteByIdUserId(userId);
+        UserRoleId id = new UserRoleId();
+        id.setUserId(userId);
+        id.setRoleId(role.getId());
+        UserRole userRole = new UserRole();
+        userRole.setId(id);
+        userRole.setRole(role);
+        userRoleRepository.save(userRole);
     }
 }
