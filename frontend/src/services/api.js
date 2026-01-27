@@ -32,12 +32,17 @@ async function request(path, { method = "GET", token, body } = {}) {
 
 export const api = {
   login: (payload) => request("/api/auth/login", { method: "POST", body: payload }),
+  createUser: (payload) => request("/api/users", { method: "POST", body: payload }),
   getEmployees: (token) => request("/api/employees", { token }),
+  createEmployee: (token, payload) => request("/api/employees", { method: "POST", token, body: payload }),
   getDepartments: (token) => request("/api/departments", { token }),
+  createDepartment: (token, payload) => request("/api/departments", { method: "POST", token, body: payload }),
   getAttendance: (token) => request("/api/attendance", { token }),
   getLeaves: (token) => request("/api/leaves", { token }),
   getPayrolls: (token) => request("/api/payroll", { token }),
   getRecruitment: (token) => request("/api/recruitments", { token }),
+  getPositions: (token) => request("/api/positions", { token }),
+  createPosition: (token, payload) => request("/api/positions", { method: "POST", token, body: payload }),
   getPublicRecruitments: () => request("/api/recruitments"),
   getRecruitmentById: (id) => request(`/api/recruitments/${id}`),
   createCandidate: (payload) => request("/api/candidates", { method: "POST", body: payload }),

@@ -44,6 +44,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         existing.setPosition(request.getPosition());
         existing.setSalary(request.getSalary());
         existing.setDateOfBirth(request.getDateOfBirth());
+        existing.setHireDate(request.getHireDate());
+        existing.setStatus(request.getStatus());
         Employee updated = employeeRepository.save(existing);
         return mapToResponse(updated);
     }
@@ -60,6 +62,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setPosition(request.getPosition());
         employee.setSalary(request.getSalary());
         employee.setDateOfBirth(request.getDateOfBirth());
+        employee.setHireDate(request.getHireDate());
+        employee.setStatus(request.getStatus());
         return employee;
     }
     private EmployeeResponse mapToResponse(Employee employee) {
@@ -72,6 +76,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setPosition(employee.getPosition());
         response.setSalary(employee.getSalary());
         response.setDateOfBirth(employee.getDateOfBirth());
+        response.setHireDate(employee.getHireDate());
+        response.setStatus(employee.getStatus());
         return response;
     }
 }

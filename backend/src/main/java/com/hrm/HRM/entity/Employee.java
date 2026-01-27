@@ -19,5 +19,7 @@ public class Employee {
     private String phone;
     private String position;
     private Double salary;
+    private LocalDate hireDate;
+    private String status;
 }
 

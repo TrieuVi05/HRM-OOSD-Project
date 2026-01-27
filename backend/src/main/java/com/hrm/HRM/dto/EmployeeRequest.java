@@ -14,6 +14,8 @@ public class EmployeeRequest {
     private String department;
     private String position;
     private String phone;
+    private LocalDate hireDate;
+    private String status;
 
     @Positive
     private Double salary;
@@ -35,6 +37,12 @@ public class EmployeeRequest {
     }
     public String getPhone() {
         return phone;
+    }
+    public LocalDate getHireDate() {
+        return hireDate;
+    }
+    public String getStatus() {
+        return status;
     }
     public Double getSalary() {
         return salary;

@@ -1,58 +1,533 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import DataTable from "../../components/common/DataTable.jsx";
+import Modal from "../../components/common/Modal.jsx";
 
 export default function EmployeesPage() {
   const { token } = useAuth();
-  const [items, setItems] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [positions, setPositions] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("employees");
+
+  const [employeeModalOpen, setEmployeeModalOpen] = useState(false);
+  const [departmentModalOpen, setDepartmentModalOpen] = useState(false);
+  const [positionModalOpen, setPositionModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [employeeForm, setEmployeeForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    department: "",
+    position: "",
+    status: "ACTIVE",
+    joinDate: ""
+  });
+
+  const [departmentForm, setDepartmentForm] = useState({
+    name: "",
+    managerUsername: ""
+  });
+
+  const [positionForm, setPositionForm] = useState({
+    title: "",
+    departmentId: "",
+    level: ""
+  });
+
+  const loadData = () => {
+    setLoading(true);
+    setError("");
+    return Promise.all([
+      api.getEmployees(token),
+      api.getDepartments(token),
+      api.getPositions(token)
+    ])
+      .then(([employeesData, departmentsData, positionsData]) => {
+        setEmployees(employeesData || []);
+        setDepartments(departmentsData || []);
+        setPositions(positionsData || []);
+      })
+      .catch((err) => {
+        setError(err.message || "Failed to load data");
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     let ignore = false;
-    setLoading(true);
-    api
-      .getEmployees(token)
-      .then((data) => {
-        if (!ignore) setItems(data || []);
-      })
-      .catch((err) => {
-        if (!ignore) setError(err.message || "Failed to load employees");
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
+    loadData().catch(() => {
+      if (!ignore) return;
+    });
     return () => {
       ignore = true;
     };
   }, [token]);
 
-  if (loading) return <div style={{ padding: 32 }}>Loading...</div>;
-  if (error) return <div style={{ padding: 32, color: "#b91c1c" }}>{error}</div>;
+  const departmentNameById = useMemo(() => {
+    const map = new Map();
+    departments.forEach((dept) => map.set(dept.id, dept.name));
+    return map;
+  }, [departments]);
+
+  const parseManager = (description) => {
+    if (!description) return "";
+    const match = description.match(/^\s*manager\s*:\s*(.+)$/i);
+    return match ? match[1].trim() : "";
+  };
+
+  const employeeRows = useMemo(() => (
+    employees.map((emp) => {
+      const rawStatus = (emp.status || "").toLowerCase();
+      const displayStatus = rawStatus === "inactive" || rawStatus === "in_active" ? "Inactive" : "Active";
+      return {
+        id: emp.id,
+        name: emp.fullName || emp.username || emp.email || "-",
+        email: emp.email || "-",
+        department: emp.department || "-",
+        position: emp.position || "-",
+        status: emp.status ? displayStatus : "Active",
+        joinDate: emp.hireDate || "-"
+      };
+    })
+  ), [employees]);
+
+  const departmentRows = useMemo(() => (
+    departments.map((dept) => ({
+      id: dept.id,
+      name: dept.name,
+      manager: parseManager(dept.description) || "-"
+    }))
+  ), [departments]);
+
+  const positionRows = useMemo(() => (
+    positions.map((pos) => ({
+      id: pos.id,
+      title: pos.name,
+      department: departmentNameById.get(pos.departmentId) || "-",
+      level: pos.description || "-"
+    }))
+  ), [positions, departmentNameById]);
+
+  const employeeColumns = [
+    { field: "name", headerName: "Name" },
+    { field: "email", headerName: "Email" },
+    { field: "department", headerName: "Department" },
+    { field: "position", headerName: "Position" },
+    { field: "status", headerName: "Status", type: "status" },
+    { field: "joinDate", headerName: "Join Date" }
+  ];
+
+  const departmentColumns = [
+    { field: "name", headerName: "Department Name" },
+    { field: "manager", headerName: "Manager" }
+  ];
+
+  const positionColumns = [
+    { field: "title", headerName: "Position Title" },
+    { field: "department", headerName: "Department" },
+    { field: "level", headerName: "Level" }
+  ];
+
+  const resetEmployeeForm = () => setEmployeeForm({
+    username: "",
+    email: "",
+    password: "",
+    department: "",
+    position: "",
+    status: "ACTIVE",
+    joinDate: ""
+  });
+
+  const resetDepartmentForm = () => setDepartmentForm({ name: "", managerUsername: "" });
+  const resetPositionForm = () => setPositionForm({ title: "", departmentId: "", level: "" });
+
+  const handleSaveEmployee = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      const statusValue = employeeForm.status || "ACTIVE";
+      await api.createUser({
+        username: employeeForm.username,
+        passwordHash: employeeForm.password,
+        email: employeeForm.email,
+        fullName: employeeForm.username,
+        status: statusValue
+      });
+
+      await api.createEmployee(token, {
+        fullName: employeeForm.username,
+        email: employeeForm.email,
+        department: employeeForm.department || null,
+        position: employeeForm.position || null,
+        status: statusValue,
+        hireDate: employeeForm.joinDate || null
+      });
+
+      setEmployeeModalOpen(false);
+      resetEmployeeForm();
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to add employee");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveDepartment = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      const managerValue = departmentForm.managerUsername.trim();
+      await api.createDepartment(token, {
+        name: departmentForm.name,
+        description: managerValue ? `manager:${managerValue}` : null
+      });
+      setDepartmentModalOpen(false);
+      resetDepartmentForm();
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to add department");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSavePosition = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      await api.createPosition(token, {
+        name: positionForm.title,
+        departmentId: positionForm.departmentId ? Number(positionForm.departmentId) : null,
+        description: positionForm.level || null
+      });
+      setPositionModalOpen(false);
+      resetPositionForm();
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to add position");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
+  if (error) return <div style={{ padding: 24, color: "#b91c1c" }}>{error}</div>;
 
   return (
-    <div style={{ padding: 32 }}>
-      <h1>Employees</h1>
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}>ID</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}>Full Name</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}>Email</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}>Department</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((emp) => (
-            <tr key={emp.id}>
-              <td style={{ padding: "8px 0" }}>{emp.id}</td>
-              <td>{emp.fullName || `${emp.firstName || ""} ${emp.lastName || ""}`.trim()}</td>
-              <td>{emp.email || "-"}</td>
-              <td>{emp.department?.name || "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ padding: 24 }}>
+      <h1 style={{ fontSize: 20, marginBottom: 6 }}>Employee & Organization Management</h1>
+      <p style={{ color: "#6b7280", marginBottom: 16, fontSize: 13 }}>
+        Manage employees, departments, and positions
+      </p>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {[
+          { key: "employees", label: "Employees" },
+          { key: "departments", label: "Departments" },
+          { key: "positions", label: "Positions" }
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid #e5e7eb",
+              background: activeTab === tab.key ? "#111827" : "#f9fafb",
+              color: activeTab === tab.key ? "#fff" : "#374151",
+              cursor: "pointer",
+              fontSize: 13
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ fontWeight: 600, fontSize: 14, color: "#111827" }}>
+          {activeTab === "employees" && "Employees"}
+          {activeTab === "departments" && "Departments"}
+          {activeTab === "positions" && "Positions"}
+        </div>
+        {activeTab === "employees" && (
+          <button
+            onClick={() => setEmployeeModalOpen(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid #111827",
+              background: "#111827",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 12
+            }}
+          >
+            + Add Employee
+          </button>
+        )}
+        {activeTab === "departments" && (
+          <button
+            onClick={() => setDepartmentModalOpen(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid #111827",
+              background: "#111827",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 12
+            }}
+          >
+            + Add Department
+          </button>
+        )}
+        {activeTab === "positions" && (
+          <button
+            onClick={() => setPositionModalOpen(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid #111827",
+              background: "#111827",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 12
+            }}
+          >
+            + Add Position
+          </button>
+        )}
+      </div>
+
+      {activeTab === "employees" && (
+        <DataTable columns={employeeColumns} data={employeeRows} showActions={false} />
+      )}
+      {activeTab === "departments" && (
+        <DataTable columns={departmentColumns} data={departmentRows} showActions={false} />
+      )}
+      {activeTab === "positions" && (
+        <DataTable columns={positionColumns} data={positionRows} showActions={false} />
+      )}
+
+      <Modal
+        isOpen={employeeModalOpen}
+        onClose={() => {
+          setEmployeeModalOpen(false);
+          resetEmployeeForm();
+        }}
+        title="Add New Employee"
+      >
+        <div style={{ display: "grid", gap: 12 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            Username
+            <input
+              value={employeeForm.username}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, username: e.target.value }))}
+              required
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Mail
+            <input
+              type="email"
+              value={employeeForm.email}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, email: e.target.value }))}
+              required
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Password
+            <input
+              type="password"
+              value={employeeForm.password}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, password: e.target.value }))}
+              required
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Department
+            <select
+              value={employeeForm.department}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, department: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            >
+              <option value="">Select department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.name}>{dept.name}</option>
+              ))}
+            </select>
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Position
+            <select
+              value={employeeForm.position}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, position: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            >
+              <option value="">Select position</option>
+              {positions.map((pos) => (
+                <option key={pos.id} value={pos.name}>{pos.name}</option>
+              ))}
+            </select>
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Status
+            <select
+              value={employeeForm.status}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, status: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            >
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Join Date
+            <input
+              type="date"
+              value={employeeForm.joinDate}
+              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, joinDate: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <button
+            onClick={() => {
+              setEmployeeModalOpen(false);
+              resetEmployeeForm();
+            }}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            disabled={saving}
+            onClick={handleSaveEmployee}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={departmentModalOpen}
+        onClose={() => {
+          setDepartmentModalOpen(false);
+          resetDepartmentForm();
+        }}
+        title="Add Department"
+      >
+        <div style={{ display: "grid", gap: 12 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            Department Name
+            <input
+              value={departmentForm.name}
+              onChange={(e) => setDepartmentForm((prev) => ({ ...prev, name: e.target.value }))}
+              required
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Manager (username)
+            <input
+              value={departmentForm.managerUsername}
+              onChange={(e) => setDepartmentForm((prev) => ({ ...prev, managerUsername: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <button
+            onClick={() => {
+              setDepartmentModalOpen(false);
+              resetDepartmentForm();
+            }}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            disabled={saving}
+            onClick={handleSaveDepartment}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={positionModalOpen}
+        onClose={() => {
+          setPositionModalOpen(false);
+          resetPositionForm();
+        }}
+        title="Add Position"
+      >
+        <div style={{ display: "grid", gap: 12 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            Position Title
+            <input
+              value={positionForm.title}
+              onChange={(e) => setPositionForm((prev) => ({ ...prev, title: e.target.value }))}
+              required
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Department
+            <select
+              value={positionForm.departmentId}
+              onChange={(e) => setPositionForm((prev) => ({ ...prev, departmentId: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            >
+              <option value="">Select department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>{dept.name}</option>
+              ))}
+            </select>
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            Level
+            <input
+              value={positionForm.level}
+              onChange={(e) => setPositionForm((prev) => ({ ...prev, level: e.target.value }))}
+              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+            />
+          </label>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <button
+            onClick={() => {
+              setPositionModalOpen(false);
+              resetPositionForm();
+            }}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            disabled={saving}
+            onClick={handleSavePosition}
+            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

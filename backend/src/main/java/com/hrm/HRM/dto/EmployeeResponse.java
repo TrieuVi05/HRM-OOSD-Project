@@ -10,6 +10,8 @@ public class EmployeeResponse {
     private String phone;
     private Double salary;
     private LocalDate dateOfBirth;
+    private LocalDate hireDate;
+    private String status;
 
     public EmployeeResponse() {
     }
@@ -48,6 +50,12 @@ public class EmployeeResponse {
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
+    public LocalDate getHireDate() {
+        return hireDate;
+    }
+    public String getStatus() {
+        return status;
+    }
     public void setId(Long id) {
         this.id = id;
     }
@@ -74,6 +82,12 @@ public class EmployeeResponse {
     }
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+    public void setHireDate(LocalDate hireDate) {
+        this.hireDate = hireDate;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
 
