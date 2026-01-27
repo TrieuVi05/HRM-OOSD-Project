@@ -14,6 +14,7 @@ import com.hrm.HRM.entity.User;
 import com.hrm.HRM.exception.BadRequestException;
 import com.hrm.HRM.exception.ResourceNotFoundException;
 import com.hrm.HRM.repository.UserRepository;
+import com.hrm.HRM.repository.UserRoleRepository;
 import com.hrm.HRM.security.JwtTokenProvider;
 
 @RestController
@@ -23,15 +24,18 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManager authenticationManager,
                           JwtTokenProvider tokenProvider,
                           UserRepository userRepository,
+                          UserRoleRepository userRoleRepository,
                           PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -43,9 +47,19 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.generateToken(authentication.getName());
 
+        User user = userRepository.findByUsername(authentication.getName())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        String role = userRoleRepository.findByIdUserId(user.getId())
+            .stream()
+            .map(ur -> ur.getRole() != null ? ur.getRole().getName() : null)
+            .filter(name -> name != null && !name.isBlank())
+            .findFirst()
+            .orElse(null);
+
         AuthResponse response = new AuthResponse();
         response.setToken(token);
         response.setUsername(authentication.getName());
+        response.setRole(role);
         return response;
     }
 
@@ -53,7 +67,18 @@ public class AuthController {
     public AuthResponse me() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AuthResponse response = new AuthResponse();
-        response.setUsername(authentication != null ? authentication.getName() : null);
+        if (authentication != null && authentication.getName() != null) {
+            response.setUsername(authentication.getName());
+            User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            String role = userRoleRepository.findByIdUserId(user.getId())
+                .stream()
+                .map(ur -> ur.getRole() != null ? ur.getRole().getName() : null)
+                .filter(name -> name != null && !name.isBlank())
+                .findFirst()
+                .orElse(null);
+            response.setRole(role);
+        }
         return response;
     }
 
