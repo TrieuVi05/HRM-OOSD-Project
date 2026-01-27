@@ -231,36 +231,36 @@ export default function AdminDashboard() {
     ]
   }), [departmentStats]);
 
-  if (loading) return <div style={{ padding: 12, fontSize: 12 }}>Loading ...</div>;
-  if (error) return <div style={{ padding: 12, color: "#dc2626", fontSize: 12 }}>{error}</div>;
+  if (loading) return <div style={{ padding: 8, fontSize: 11 }}>Loading ...</div>;
+  if (error) return <div style={{ padding: 8, color: "#dc2626", fontSize: 11 }}>{error}</div>;
 
   return (
-    <div style={{ padding: 12 }}>
-      <h1 style={{ fontSize: 16, fontWeight: 700, marginBottom: 2 }}>Tổng quan Dashboard</h1>
-      <p style={{ color: "#6b7280", marginBottom: 10, fontSize: 11 }}>Chào mừng bạn! Đây là tình hình hôm nay.</p>
+    <div style={{ padding: 8 }}>
+      <h1 style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>Tổng quan Dashboard</h1>
+      <p style={{ color: "#6b7280", marginBottom: 8, fontSize: 10 }}>Chào mừng bạn! Đây là tình hình hôm nay.</p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 6 }}>
         <StatsCard title="Tổng nhân viên" value={totalEmployees} icon="👥" color="blue" />
         <StatsCard title="Chấm công hôm nay" value={`${presentToday}/${totalEmployees}`} icon="⏰" color="green" trend="up" trendValue={`${attendanceRate}%`} />
         <StatsCard title="Yêu cầu nghỉ phép" value={pendingLeaves.length} icon="📌" color="yellow" />
         <StatsCard title="Tổng lương (tháng)" value={formatCurrency(totalPayrollMonthly)} icon="💰" color="purple" />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 8, marginTop: 10 }}>
-        <div style={{ background: "#fff", borderRadius: 8, padding: 10, border: "1px solid #f3f4f6" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h3 style={{ margin: 0, fontSize: 12, fontWeight: 600 }}>Xu hướng chấm công</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 6, marginTop: 8 }}>
+        <div style={{ background: "#fff", borderRadius: 8, padding: 8, border: "1px solid #f3f4f6" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <h3 style={{ margin: 0, fontSize: 11, fontWeight: 600 }}>Xu hướng chấm công</h3>
             <div style={{ display: "flex", gap: 8 }}>
               <button
                 onClick={() => setTrendMode("week")}
                 style={{
-                  padding: "3px 8px",
-                  borderRadius: 5,
+                  padding: "2px 6px",
+                  borderRadius: 4,
                   border: "1px solid #e5e7eb",
                   background: trendMode === "week" ? "#3b82f6" : "#fff",
                   color: trendMode === "week" ? "#fff" : "#374151",
                   cursor: "pointer",
-                  fontSize: 11
+                  fontSize: 10
                 }}
               >
                 Tuần
@@ -268,40 +268,43 @@ export default function AdminDashboard() {
               <button
                 onClick={() => setTrendMode("month")}
                 style={{
-                  padding: "3px 8px",
-                  borderRadius: 5,
+                  padding: "2px 6px",
+                  borderRadius: 4,
                   border: "1px solid #e5e7eb",
                   background: trendMode === "month" ? "#3b82f6" : "#fff",
                   color: trendMode === "month" ? "#fff" : "#374151",
                   cursor: "pointer",
-                  fontSize: 11
+                  fontSize: 10
                 }}
               >
                 Tháng
               </button>
             </div>
           </div>
-          <Bar
-            data={attendanceChartData}
-            options={{
-              responsive: true,
-              plugins: { legend: { position: "bottom" }, tooltip: { enabled: true } },
-              scales: { y: { beginAtZero: true } }
-            }}
-          />
+          <div style={{ height: 220 }}>
+            <Bar
+              data={attendanceChartData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: "bottom" }, tooltip: { enabled: true } },
+                scales: { y: { beginAtZero: true } }
+              }}
+            />
+          </div>
         </div>
 
-        <div style={{ background: "#fff", borderRadius: 8, padding: 10, border: "1px solid #f3f4f6" }}>
-          <h3 style={{ margin: 0, fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Việc cần xử lý</h3>
+        <div style={{ background: "#fff", borderRadius: 8, padding: 8, border: "1px solid #f3f4f6" }}>
+          <h3 style={{ margin: 0, fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Việc cần xử lý</h3>
           {pendingActions.length === 0 ? (
-            <p style={{ color: "#6b7280", fontSize: 11 }}>Không có việc cần xử lý.</p>
+            <p style={{ color: "#6b7280", fontSize: 10 }}>Không có việc cần xử lý.</p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {pendingActions.map((item, index) => (
-                <div key={`${item.type}-${index}`} style={{ padding: 8, border: "1px solid #e5e7eb", borderRadius: 6 }}>
-                  <div style={{ fontSize: 10, color: "#6b7280" }}>{item.type}</div>
-                  <div style={{ fontWeight: 600, fontSize: 12 }}>{item.title}</div>
-                  <div style={{ fontSize: 10, color: "#9ca3af" }}>{item.date ? new Date(item.date).toLocaleDateString("vi-VN") : ""}</div>
+                <div key={`${item.type}-${index}`} style={{ padding: 6, border: "1px solid #e5e7eb", borderRadius: 6 }}>
+                  <div style={{ fontSize: 9, color: "#6b7280" }}>{item.type}</div>
+                  <div style={{ fontWeight: 600, fontSize: 11 }}>{item.title}</div>
+                  <div style={{ fontSize: 9, color: "#9ca3af" }}>{item.date ? new Date(item.date).toLocaleDateString("vi-VN") : ""}</div>
                 </div>
               ))}
             </div>
@@ -309,19 +312,27 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 8, marginTop: 10 }}>
-        <div style={{ background: "#fff", borderRadius: 8, padding: 10, border: "1px solid #f3f4f6" }}>
-          <h3 style={{ margin: 0, fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nhân viên theo phòng ban</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 6, marginTop: 8 }}>
+        <div style={{ background: "#fff", borderRadius: 8, padding: 8, border: "1px solid #f3f4f6" }}>
+          <h3 style={{ margin: 0, fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Nhân viên theo phòng ban</h3>
           {departmentStats.length === 0 ? (
-            <p style={{ color: "#6b7280", fontSize: 11 }}>Chưa có dữ liệu phòng ban.</p>
+            <p style={{ color: "#6b7280", fontSize: 10 }}>Chưa có dữ liệu phòng ban.</p>
           ) : (
-            <Pie data={departmentChartData} options={{ plugins: { legend: { position: "bottom" } } }} />
+            <div style={{ height: 220 }}>
+              <Pie
+                data={departmentChartData}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: { legend: { position: "bottom" } }
+                }}
+              />
+            </div>
           )}
         </div>
 
-        <div style={{ background: "#fff", borderRadius: 8, padding: 10, border: "1px solid #f3f4f6" }}>
-          <h3 style={{ margin: 0, fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Thống kê nhanh</h3>
-          <ul style={{ margin: 0, paddingLeft: 14, color: "#4b5563", fontSize: 11 }}>
+        <div style={{ background: "#fff", borderRadius: 8, padding: 8, border: "1px solid #f3f4f6" }}>
+          <h3 style={{ margin: 0, fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Thống kê nhanh</h3>
+          <ul style={{ margin: 0, paddingLeft: 12, color: "#4b5563", fontSize: 10 }}>
             <li>Tổng nhân viên: {totalEmployees}</li>
             <li>Đi làm hôm nay: {presentToday}</li>
             <li>Yêu cầu nghỉ phép chờ duyệt: {pendingLeaves.length}</li>

@@ -17,6 +17,10 @@ export default function EmployeesPage() {
   const [departmentModalOpen, setDepartmentModalOpen] = useState(false);
   const [positionModalOpen, setPositionModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingEmployeeId, setEditingEmployeeId] = useState(null);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [editingDepartmentId, setEditingDepartmentId] = useState(null);
+  const [editingPositionId, setEditingPositionId] = useState(null);
 
   const [employeeForm, setEmployeeForm] = useState({
     username: "",
@@ -133,40 +137,159 @@ export default function EmployeesPage() {
     { field: "level", headerName: "Level" }
   ];
 
-  const resetEmployeeForm = () => setEmployeeForm({
-    username: "",
-    email: "",
-    password: "",
-    department: "",
-    position: "",
-    status: "ACTIVE",
-    joinDate: ""
-  });
+  const resetEmployeeForm = () => {
+    setEmployeeForm({
+      username: "",
+      email: "",
+      password: "",
+      department: "",
+      position: "",
+      status: "ACTIVE",
+      joinDate: ""
+    });
+    setEditingEmployeeId(null);
+    setEditingEmployee(null);
+  };
 
-  const resetDepartmentForm = () => setDepartmentForm({ name: "", managerUsername: "" });
-  const resetPositionForm = () => setPositionForm({ title: "", departmentId: "", level: "" });
+  const resetDepartmentForm = () => {
+    setDepartmentForm({ name: "", managerUsername: "" });
+    setEditingDepartmentId(null);
+  };
+  const resetPositionForm = () => {
+    setPositionForm({ title: "", departmentId: "", level: "" });
+    setEditingPositionId(null);
+  };
+
+  const toDateInputValue = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+    return date.toISOString().slice(0, 10);
+  };
+
+  const handleEditEmployee = (row) => {
+    const target = employees.find((emp) => String(emp.id) === String(row.id));
+    if (!target) return;
+    setEditingEmployeeId(target.id);
+    setEditingEmployee(target);
+    setEmployeeForm({
+      username: target.fullName || "",
+      email: target.email || "",
+      password: "",
+      department: target.department || "",
+      position: target.position || "",
+      status: target.status || "ACTIVE",
+      joinDate: toDateInputValue(target.hireDate)
+    });
+    setEmployeeModalOpen(true);
+  };
+
+  const handleDeleteEmployee = async (row) => {
+    if (!row?.id) return;
+    const confirmed = window.confirm("Xóa nhân viên này?");
+    if (!confirmed) return;
+    setSaving(true);
+    setError("");
+    try {
+      await api.deleteEmployee(token, row.id);
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to delete employee");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEditDepartment = (row) => {
+    const target = departments.find((dept) => String(dept.id) === String(row.id));
+    if (!target) return;
+    setEditingDepartmentId(target.id);
+    setDepartmentForm({
+      name: target.name || "",
+      managerUsername: parseManager(target.description) || ""
+    });
+    setDepartmentModalOpen(true);
+  };
+
+  const handleDeleteDepartment = async (row) => {
+    if (!row?.id) return;
+    const confirmed = window.confirm("Xóa phòng ban này?");
+    if (!confirmed) return;
+    setSaving(true);
+    setError("");
+    try {
+      await api.deleteDepartment(token, row.id);
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to delete department");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEditPosition = (row) => {
+    const target = positions.find((pos) => String(pos.id) === String(row.id));
+    if (!target) return;
+    setEditingPositionId(target.id);
+    setPositionForm({
+      title: target.name || "",
+      departmentId: target.departmentId ? String(target.departmentId) : "",
+      level: target.description || ""
+    });
+    setPositionModalOpen(true);
+  };
+
+  const handleDeletePosition = async (row) => {
+    if (!row?.id) return;
+    const confirmed = window.confirm("Xóa vị trí này?");
+    if (!confirmed) return;
+    setSaving(true);
+    setError("");
+    try {
+      await api.deletePosition(token, row.id);
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Failed to delete position");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSaveEmployee = async () => {
     setSaving(true);
     setError("");
     try {
       const statusValue = employeeForm.status || "ACTIVE";
-      await api.createUser({
-        username: employeeForm.username,
-        passwordHash: employeeForm.password,
-        email: employeeForm.email,
-        fullName: employeeForm.username,
-        status: statusValue
-      });
+      if (editingEmployeeId) {
+        await api.updateEmployee(token, editingEmployeeId, {
+          fullName: employeeForm.username,
+          email: employeeForm.email,
+          department: employeeForm.department || null,
+          position: employeeForm.position || null,
+          status: statusValue,
+          hireDate: employeeForm.joinDate || null,
+          phone: editingEmployee?.phone || null,
+          salary: editingEmployee?.salary || null,
+          dateOfBirth: editingEmployee?.dateOfBirth || null
+        });
+      } else {
+        await api.createUser({
+          username: employeeForm.username,
+          passwordHash: employeeForm.password,
+          email: employeeForm.email,
+          fullName: employeeForm.username,
+          status: statusValue
+        });
 
-      await api.createEmployee(token, {
-        fullName: employeeForm.username,
-        email: employeeForm.email,
-        department: employeeForm.department || null,
-        position: employeeForm.position || null,
-        status: statusValue,
-        hireDate: employeeForm.joinDate || null
-      });
+        await api.createEmployee(token, {
+          fullName: employeeForm.username,
+          email: employeeForm.email,
+          department: employeeForm.department || null,
+          position: employeeForm.position || null,
+          status: statusValue,
+          hireDate: employeeForm.joinDate || null
+        });
+      }
 
       setEmployeeModalOpen(false);
       resetEmployeeForm();
@@ -183,10 +306,15 @@ export default function EmployeesPage() {
     setError("");
     try {
       const managerValue = departmentForm.managerUsername.trim();
-      await api.createDepartment(token, {
+      const payload = {
         name: departmentForm.name,
         description: managerValue ? `manager:${managerValue}` : null
-      });
+      };
+      if (editingDepartmentId) {
+        await api.updateDepartment(token, editingDepartmentId, payload);
+      } else {
+        await api.createDepartment(token, payload);
+      }
       setDepartmentModalOpen(false);
       resetDepartmentForm();
       await loadData();
@@ -201,11 +329,16 @@ export default function EmployeesPage() {
     setSaving(true);
     setError("");
     try {
-      await api.createPosition(token, {
+      const payload = {
         name: positionForm.title,
         departmentId: positionForm.departmentId ? Number(positionForm.departmentId) : null,
         description: positionForm.level || null
-      });
+      };
+      if (editingPositionId) {
+        await api.updatePosition(token, editingPositionId, payload);
+      } else {
+        await api.createPosition(token, payload);
+      }
       setPositionModalOpen(false);
       resetPositionForm();
       await loadData();
@@ -217,16 +350,16 @@ export default function EmployeesPage() {
   };
 
   if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
-  if (error) return <div style={{ padding: 24, color: "#b91c1c" }}>{error}</div>;
+  if (error) return <div style={{ padding: 10, color: "#b91c1c" }}>{error}</div>;
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1 style={{ fontSize: 20, marginBottom: 6 }}>Employee & Organization Management</h1>
-      <p style={{ color: "#6b7280", marginBottom: 16, fontSize: 13 }}>
+    <div style={{ padding: 10 }}>
+      <h1 style={{ fontSize: 16, marginBottom: 5 }}>Employee & Organization Management</h1>
+      <p style={{ color: "#6b7280", marginBottom: 13, fontSize: 10 }}>
         Manage employees, departments, and positions
       </p>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
         {[
           { key: "employees", label: "Employees" },
           { key: "departments", label: "Departments" },
@@ -236,13 +369,13 @@ export default function EmployeesPage() {
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 6,
+              padding: "5px 10px",
+              borderRadius: 5,
               border: "1px solid #e5e7eb",
               background: activeTab === tab.key ? "#111827" : "#f9fafb",
               color: activeTab === tab.key ? "#fff" : "#374151",
               cursor: "pointer",
-              fontSize: 13
+              fontSize: 10
             }}
           >
             {tab.label}
@@ -250,8 +383,8 @@ export default function EmployeesPage() {
         ))}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <div style={{ fontWeight: 600, fontSize: 14, color: "#111827" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <div style={{ fontWeight: 600, fontSize: 11, color: "#111827" }}>
           {activeTab === "employees" && "Employees"}
           {activeTab === "departments" && "Departments"}
           {activeTab === "positions" && "Positions"}
@@ -260,13 +393,13 @@ export default function EmployeesPage() {
           <button
             onClick={() => setEmployeeModalOpen(true)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 6,
+              padding: "5px 10px",
+              borderRadius: 5,
               border: "1px solid #111827",
               background: "#111827",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 12
+              fontSize: 10
             }}
           >
             + Add Employee
@@ -276,13 +409,13 @@ export default function EmployeesPage() {
           <button
             onClick={() => setDepartmentModalOpen(true)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 6,
+              padding: "5px 10px",
+              borderRadius: 5,
               border: "1px solid #111827",
               background: "#111827",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 12
+              fontSize: 10
             }}
           >
             + Add Department
@@ -292,13 +425,13 @@ export default function EmployeesPage() {
           <button
             onClick={() => setPositionModalOpen(true)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 6,
+              padding: "5px 10px",
+              borderRadius: 5,
               border: "1px solid #111827",
               background: "#111827",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 12
+              fontSize: 10
             }}
           >
             + Add Position
@@ -307,13 +440,31 @@ export default function EmployeesPage() {
       </div>
 
       {activeTab === "employees" && (
-        <DataTable columns={employeeColumns} data={employeeRows} showActions={false} />
+        <DataTable
+          columns={employeeColumns}
+          data={employeeRows}
+          onEdit={handleEditEmployee}
+          onDelete={handleDeleteEmployee}
+          showActions
+        />
       )}
       {activeTab === "departments" && (
-        <DataTable columns={departmentColumns} data={departmentRows} showActions={false} />
+        <DataTable
+          columns={departmentColumns}
+          data={departmentRows}
+          onEdit={handleEditDepartment}
+          onDelete={handleDeleteDepartment}
+          showActions
+        />
       )}
       {activeTab === "positions" && (
-        <DataTable columns={positionColumns} data={positionRows} showActions={false} />
+        <DataTable
+          columns={positionColumns}
+          data={positionRows}
+          onEdit={handleEditPosition}
+          onDelete={handleDeletePosition}
+          showActions
+        />
       )}
 
       <Modal
@@ -322,16 +473,16 @@ export default function EmployeesPage() {
           setEmployeeModalOpen(false);
           resetEmployeeForm();
         }}
-        title="Add New Employee"
+        title={editingEmployeeId ? "Edit Employee" : "Add New Employee"}
       >
-        <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "grid", gap: 10 }}>
           <label style={{ display: "grid", gap: 6 }}>
             Username
             <input
               value={employeeForm.username}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, username: e.target.value }))}
               required
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
           <label style={{ display: "grid", gap: 6 }}>
@@ -341,25 +492,27 @@ export default function EmployeesPage() {
               value={employeeForm.email}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, email: e.target.value }))}
               required
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
-          <label style={{ display: "grid", gap: 6 }}>
-            Password
-            <input
-              type="password"
-              value={employeeForm.password}
-              onChange={(e) => setEmployeeForm((prev) => ({ ...prev, password: e.target.value }))}
-              required
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
-            />
-          </label>
+          {!editingEmployeeId && (
+            <label style={{ display: "grid", gap: 6 }}>
+              Password
+              <input
+                type="password"
+                value={employeeForm.password}
+                onChange={(e) => setEmployeeForm((prev) => ({ ...prev, password: e.target.value }))}
+                required
+                style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
+              />
+            </label>
+          )}
           <label style={{ display: "grid", gap: 6 }}>
             Department
             <select
               value={employeeForm.department}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, department: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             >
               <option value="">Select department</option>
               {departments.map((dept) => (
@@ -372,7 +525,7 @@ export default function EmployeesPage() {
             <select
               value={employeeForm.position}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, position: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             >
               <option value="">Select position</option>
               {positions.map((pos) => (
@@ -385,7 +538,7 @@ export default function EmployeesPage() {
             <select
               value={employeeForm.status}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, status: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             >
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
@@ -397,25 +550,25 @@ export default function EmployeesPage() {
               type="date"
               value={employeeForm.joinDate}
               onChange={(e) => setEmployeeForm((prev) => ({ ...prev, joinDate: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginTop: 13 }}>
           <button
             onClick={() => {
               setEmployeeModalOpen(false);
               resetEmployeeForm();
             }}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             Cancel
           </button>
           <button
             disabled={saving}
             onClick={handleSaveEmployee}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             {saving ? "Saving..." : "Save"}
           </button>
@@ -428,16 +581,16 @@ export default function EmployeesPage() {
           setDepartmentModalOpen(false);
           resetDepartmentForm();
         }}
-        title="Add Department"
+        title={editingDepartmentId ? "Edit Department" : "Add Department"}
       >
-        <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "grid", gap: 10 }}>
           <label style={{ display: "grid", gap: 6 }}>
             Department Name
             <input
               value={departmentForm.name}
               onChange={(e) => setDepartmentForm((prev) => ({ ...prev, name: e.target.value }))}
               required
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
           <label style={{ display: "grid", gap: 6 }}>
@@ -445,24 +598,24 @@ export default function EmployeesPage() {
             <input
               value={departmentForm.managerUsername}
               onChange={(e) => setDepartmentForm((prev) => ({ ...prev, managerUsername: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginTop: 13 }}>
           <button
             onClick={() => {
               setDepartmentModalOpen(false);
               resetDepartmentForm();
             }}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             Cancel
           </button>
           <button
             disabled={saving}
             onClick={handleSaveDepartment}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             {saving ? "Saving..." : "Save"}
           </button>
@@ -475,16 +628,16 @@ export default function EmployeesPage() {
           setPositionModalOpen(false);
           resetPositionForm();
         }}
-        title="Add Position"
+        title={editingPositionId ? "Edit Position" : "Add Position"}
       >
-        <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "grid", gap: 10 }}>
           <label style={{ display: "grid", gap: 6 }}>
             Position Title
             <input
               value={positionForm.title}
               onChange={(e) => setPositionForm((prev) => ({ ...prev, title: e.target.value }))}
               required
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
           <label style={{ display: "grid", gap: 6 }}>
@@ -492,7 +645,7 @@ export default function EmployeesPage() {
             <select
               value={positionForm.departmentId}
               onChange={(e) => setPositionForm((prev) => ({ ...prev, departmentId: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             >
               <option value="">Select department</option>
               {departments.map((dept) => (
@@ -505,24 +658,24 @@ export default function EmployeesPage() {
             <input
               value={positionForm.level}
               onChange={(e) => setPositionForm((prev) => ({ ...prev, level: e.target.value }))}
-              style={{ padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+              style={{ padding: 6, borderRadius: 5, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
           </label>
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginTop: 13 }}>
           <button
             onClick={() => {
               setPositionModalOpen(false);
               resetPositionForm();
             }}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             Cancel
           </button>
           <button
             disabled={saving}
             onClick={handleSavePosition}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer" }}
+            style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #111827", background: "#111827", color: "#fff", cursor: "pointer", fontSize: 12 }}
           >
             {saving ? "Saving..." : "Save"}
           </button>

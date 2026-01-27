@@ -472,3 +472,76 @@ FROM candidates c
 CROSS JOIN employees e
 WHERE c.email = 'candidate1@hrm.local'
     AND e.email = 'manager1@hrm.local';
+
+-- =========================
+-- Dev: Update employee full_name to Vietnamese two-word names (no diacritics)
+-- =========================
+UPDATE employees
+SET full_name = CASE employee_code
+    WHEN 'EMP001' THEN 'Nguyen An'
+    WHEN 'EMP002' THEN 'Tran Binh'
+    WHEN 'EMP003' THEN 'Le Hoa'
+    WHEN 'EMP004' THEN 'Pham Lan'
+    WHEN 'EMP005' THEN 'Hoang Mai'
+    WHEN 'EMP006' THEN 'Doan Hung'
+    WHEN 'EMP007' THEN 'Bui Son'
+    WHEN 'EMP008' THEN 'Vu Khanh'
+    WHEN 'EMP009' THEN 'Ly Minh'
+    WHEN 'EMP010' THEN 'Dang Huy'
+    WHEN 'EMP011' THEN 'Ngo Quoc'
+    WHEN 'EMP012' THEN 'Tran Thanh'
+    WHEN 'EMP013' THEN 'Le Thi'
+    WHEN 'EMP014' THEN 'Pham Duc'
+    WHEN 'EMP015' THEN 'Hoang Anh'
+    WHEN 'EMP016' THEN 'Doan Nam'
+    WHEN 'EMP017' THEN 'Bui Luyen'
+    WHEN 'EMP018' THEN 'Vu Long'
+    WHEN 'EMP019' THEN 'Ly Dung'
+    WHEN 'EMP020' THEN 'Dang Thao'
+    WHEN 'EMP021' THEN 'Ngo An'
+    WHEN 'EMP022' THEN 'Tran Khoa'
+    WHEN 'EMP023' THEN 'Le Quang'
+    WHEN 'EMP024' THEN 'Pham Hieu'
+    WHEN 'EMP025' THEN 'Hoang Giang'
+    WHEN 'EMP026' THEN 'Doan Kiet'
+    WHEN 'EMP027' THEN 'Bui Thanh'
+    WHEN 'EMP028' THEN 'Vu Phat'
+    WHEN 'EMP029' THEN 'Ly Tuan'
+    WHEN 'EMP030' THEN 'Dang Minh'
+    WHEN 'EMP031' THEN 'Ngo Trung'
+    WHEN 'EMP032' THEN 'Tran Son'
+    WHEN 'EMP033' THEN 'Le Van'
+    ELSE full_name
+END
+WHERE employee_code IN (
+    'EMP001','EMP002','EMP003','EMP004','EMP005','EMP006','EMP007','EMP008','EMP009','EMP010',
+    'EMP011','EMP012','EMP013','EMP014','EMP015','EMP016','EMP017','EMP018','EMP019','EMP020',
+    'EMP021','EMP022','EMP023','EMP024','EMP025','EMP026','EMP027','EMP028','EMP029','EMP030',
+    'EMP031','EMP032','EMP033'
+);
+
+-- =========================
+-- Dev: Seed attendance - 3 random ABSENT employees per day (2026-01-22 .. 2026-01-28)
+-- Inserts only ABSENT rows; PRESENT rows are not added (status defaults to PRESENT if needed).
+-- =========================
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-22', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-23', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-24', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-25', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-26', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-27', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
+INSERT INTO attendance (employee_id, work_date, status)
+SELECT id, '2026-01-28', 'ABSENT' FROM employees ORDER BY RAND() LIMIT 3;
+
