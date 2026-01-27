@@ -1,7 +1,5 @@
 package com.hrm.HRM.dto;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.time.LocalDate;
 
 public class EmployeeRequest {

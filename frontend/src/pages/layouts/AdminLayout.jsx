@@ -1,20 +1,21 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useState } from "react";
 
 export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const menuItems = [
-  { path: "/dashboard/admin", label: "Dashboard", icon: "📊" },
-  { path: "/employees", label: "Nhân viên", icon: "👥" },
-  { path: "/departments", label: "Phòng ban", icon: "🏢" },
-  { path: "/attendance", label: "Chấm công", icon: "⏰" },
-  { path: "/leaves", label: "Nghỉ phép", icon: "🏖️" },
-  { path: "/recruitment", label: "Tuyển dụng", icon: "📝" },
-  { path: "/payroll", label: "Lương", icon: "💰" },
-];
+    { path: "/employees", label: "Nhân viên", icon: "👥" },
+    { path: "/departments", label: "Phòng ban", icon: "🏢" },
+    { path: "/attendance", label: "Chấm công", icon: "⏰" },
+    { path: "/leaves", label: "Nghỉ phép", icon: "🏖️" },
+    { path: "/recruitment", label: "Tuyển dụng", icon: "📝" },
+    { path: "/payroll", label: "Lương", icon: "💰" },
+  ];
 
 
   return (
@@ -22,7 +23,10 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside style={{ width: 260, background: '#fff', boxShadow: '2px 0 4px rgba(0,0,0,0.05)' }}>
         <div style={{ padding: 24, borderBottom: '1px solid #e5e7eb' }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#3b82f6', margin: 0 }}>🏢 HRM System</h1>
+          <Link to="/dashboard/admin" style={{ textDecoration: "none" }}>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: '#3b82f6', margin: 0 }}>🏢 HR Admin</h1>
+          </Link>
+          <p style={{ margin: "6px 0 0", fontSize: 12, color: "#6b7280" }}>Nhấn logo để về Dashboard</p>
         </div>
         
         <nav style={{ marginTop: 8 }}>
@@ -45,7 +49,7 @@ export default function AdminLayout() {
                   transition: 'all 0.2s'
                 }}
               >
-                <span style={{ fontSize: 14, color: '#6b7280' }}>👤 {user || "Admin"}</span>
+                <span style={{ marginRight: 10 }}>{item.icon}</span>
                 {item.label}
               </Link>
             );
@@ -59,16 +63,48 @@ export default function AdminLayout() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>Admin Panel</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontSize: 14, color: '#6b7280' }}>👤 Admin User</span>
-              <button
-                  onClick={() => {
-                    logout();
-                    navigate("/login");
-                  }}
-                  style={{ padding: '6px 16px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, cursor: 'pointer' }}
+              <span style={{ fontSize: 14, color: '#6b7280' }}>👤 {user || "HR Admin"}</span>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setSettingsOpen((prev) => !prev)}
+                  style={{ padding: '6px 10px', background: '#f3f4f6', color: '#111827', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 14, cursor: 'pointer' }}
                 >
-                  Đăng xuất
-              </button>
+                  ⚙️
+                </button>
+                {settingsOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      top: 40,
+                      minWidth: 160,
+                      background: "#fff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: 10,
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.08)",
+                      overflow: "hidden",
+                      zIndex: 20
+                    }}
+                  >
+                    <button
+                      onClick={() => setSettingsOpen(false)}
+                      style={{ width: "100%", textAlign: "left", padding: "10px 12px", border: "none", background: "transparent", cursor: "pointer" }}
+                    >
+                      Hồ sơ
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSettingsOpen(false);
+                        logout();
+                        navigate("/login");
+                      }}
+                      style={{ width: "100%", textAlign: "left", padding: "10px 12px", border: "none", background: "transparent", cursor: "pointer", color: "#dc2626" }}
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
 
             </div>
           </div>
