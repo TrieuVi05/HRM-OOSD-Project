@@ -14,6 +14,18 @@ function formatCurrency(value) {
   return new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(value || 0) + "k ₫";
 }
 
+function toInputDateTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
 function getStatus(contract) {
   if (contract?.status) return contract.status.toUpperCase();
   if (!contract?.endDate) return "ACTIVE";
@@ -122,7 +134,7 @@ export default function ContractsPage() {
       endDate: contract.endDate || "",
       salary: contract.salary || "",
       status: (contract.status || "ACTIVE").toUpperCase(),
-      signedAt: contract.signedAt || ""
+      signedAt: toInputDateTime(contract.signedAt)
     });
     setSelectedContract(contract);
     setFormError("");
@@ -141,7 +153,7 @@ export default function ContractsPage() {
       endDate,
       salary: contract.salary || "",
       status: "ACTIVE",
-      signedAt: contract.signedAt || ""
+      signedAt: toInputDateTime(contract.signedAt)
     });
     setSelectedContract(contract);
     setFormError("");
@@ -175,7 +187,7 @@ export default function ContractsPage() {
         endDate: formData.endDate || null,
         salary: formData.salary ? Number(formData.salary) : 0,
         status: formData.status,
-        signedAt: formData.signedAt || null
+        signedAt: formData.signedAt ? new Date(formData.signedAt).toISOString() : null
       };
 
       if (formMode === "create") {
