@@ -18,7 +18,13 @@ export default function LoginPage() {
     try {
       const data = await api.login({ username, password });
       login({ token: data.token, role: data.role, user: data.username });
-      navigate("/");
+      const roleToPath = {
+  HR_ADMIN: "/dashboard/admin",
+  MANAGER: "/dashboard/manager",
+  EMPLOYEE: "/dashboard/employee",
+};
+
+navigate(roleToPath[data.role] || "/dashboard/employee");
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {

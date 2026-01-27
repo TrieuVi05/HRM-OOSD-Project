@@ -1,17 +1,21 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function AdminLayout() {
   const location = useLocation();
-  
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
   const menuItems = [
-    { path: '/admin', label: 'Dashboard', icon: '📊' },
-    { path: '/admin/employees', label: 'Nhân viên', icon: '👥' },
-    { path: '/admin/departments', label: 'Phòng ban', icon: '🏢' },
-    { path: '/admin/attendance', label: 'Chấm công', icon: '⏰' },
-    { path: '/admin/leaves', label: 'Nghỉ phép', icon: '🏖️' },
-    { path: '/admin/recruitment', label: 'Tuyển dụng', icon: '📝' },
-    { path: '/admin/payroll', label: 'Lương', icon: '💰' },
-  ];
+  { path: "/dashboard/admin", label: "Dashboard", icon: "📊" },
+  { path: "/employees", label: "Nhân viên", icon: "👥" },
+  { path: "/departments", label: "Phòng ban", icon: "🏢" },
+  { path: "/attendance", label: "Chấm công", icon: "⏰" },
+  { path: "/leaves", label: "Nghỉ phép", icon: "🏖️" },
+  { path: "/recruitment", label: "Tuyển dụng", icon: "📝" },
+  { path: "/payroll", label: "Lương", icon: "💰" },
+];
+
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#f9fafb' }}>
@@ -23,7 +27,7 @@ export default function AdminLayout() {
         
         <nav style={{ marginTop: 8 }}>
           {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname.startsWith(item.path);
             return (
               <Link
                 key={item.path}
@@ -41,7 +45,7 @@ export default function AdminLayout() {
                   transition: 'all 0.2s'
                 }}
               >
-                <span style={{ marginRight: 12, fontSize: 18 }}>{item.icon}</span>
+                <span style={{ fontSize: 14, color: '#6b7280' }}>👤 {user || "Admin"}</span>
                 {item.label}
               </Link>
             );
@@ -56,9 +60,16 @@ export default function AdminLayout() {
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>Admin Panel</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 14, color: '#6b7280' }}>👤 Admin User</span>
-              <button style={{ padding: '6px 16px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, cursor: 'pointer' }}>
-                Đăng xuất
+              <button
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
+                  style={{ padding: '6px 16px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, cursor: 'pointer' }}
+                >
+                  Đăng xuất
               </button>
+
             </div>
           </div>
         </header>
