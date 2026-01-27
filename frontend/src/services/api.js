@@ -37,6 +37,9 @@ export const api = {
   getLeaves: (token) => request("/api/leaves", { token }),
   getPayrolls: (token) => request("/api/payroll", { token }),
   getRecruitment: (token) => request("/api/recruitments", { token }),
+  getPublicRecruitments: () => request("/api/recruitments"),
+  getRecruitmentById: (id) => request(`/api/recruitments/${id}`),
+  createCandidate: (payload) => request("/api/candidates", { method: "POST", body: payload }),
   getEmployeeById: (token, id) => request(`/api/employees/${id}`, { token }),
 
   createEmployee: (token, payload) =>

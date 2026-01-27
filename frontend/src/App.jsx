@@ -7,6 +7,9 @@ import RoleLayout from "./pages/layouts/RoleLayout.jsx";
 import HomePage from "./pages/public/HomePage.jsx";
 import LoginPage from "./pages/public/LoginPage.jsx";
 import UnauthorizedPage from "./pages/public/UnauthorizedPage.jsx";
+import RecruitmentLandingPage from "./pages/public/RecruitmentLandingPage.jsx";
+import RecruitmentDetailPage from "./pages/public/RecruitmentDetailPage.jsx";
+import RecruitmentApplyPage from "./pages/public/RecruitmentApplyPage.jsx";
 
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManagerDashboard from "./pages/manager/ManagerDashboard.jsx";
@@ -26,6 +29,9 @@ export default function App() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/careers" element={<RecruitmentLandingPage />} />
+        <Route path="/careers/:id" element={<RecruitmentDetailPage />} />
+        <Route path="/careers/:id/apply" element={<RecruitmentApplyPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Route>
