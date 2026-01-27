@@ -33,6 +33,8 @@ async function request(path, { method = "GET", token, body } = {}) {
 export const api = {
   login: (payload) => request("/api/auth/login", { method: "POST", body: payload }),
   createUser: (payload) => request("/api/users", { method: "POST", body: payload }),
+  getUsers: (token) => request("/api/users", { token }),
+  getRoles: (token) => request("/api/roles", { token }),
   getEmployees: (token) => request("/api/employees", { token }),
   createEmployee: (token, payload) => request("/api/employees", { method: "POST", token, body: payload }),
   getDepartments: (token) => request("/api/departments", { token }),

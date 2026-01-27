@@ -21,6 +21,7 @@ import AttendancePage from "./pages/shared/AttendancePage.jsx";
 import LeavesPage from "./pages/shared/LeavesPage.jsx";
 import PayrollPage from "./pages/shared/PayrollPage.jsx";
 import RecruitmentPage from "./pages/shared/RecruitmentPage.jsx";
+import UsersRolesPage from "./pages/shared/UsersRolesPage.jsx";
 
 import "./App.css";
 
@@ -113,6 +114,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
               <RecruitmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/roles"
+          element={
+            <ProtectedRoute allowedRoles={["HR_ADMIN"]}>
+              <UsersRolesPage />
             </ProtectedRoute>
           }
         />

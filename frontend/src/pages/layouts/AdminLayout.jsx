@@ -15,6 +15,7 @@ export default function AdminLayout() {
     { path: "/leaves", label: "Nghỉ phép", icon: "🏖️" },
     { path: "/recruitment", label: "Tuyển dụng", icon: "📝" },
     { path: "/payroll", label: "Lương", icon: "💰" },
+    { path: "/roles", label: "Users & Roles", icon: "🧩" },
   ];
 
 
