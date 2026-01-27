@@ -8,9 +8,10 @@ function buildHeaders(token, json = true) {
 }
 
 async function request(path, { method = "GET", token, body } = {}) {
+  const effectiveToken = token ?? localStorage.getItem("token");
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
-    headers: buildHeaders(token, body !== undefined),
+    headers: buildHeaders(effectiveToken, body !== undefined),
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 

@@ -318,9 +318,9 @@ Frontend: **http://localhost:5173**
 
 | Username | Password | Role |
 |----------|----------|------|
-| admin | Admin@123 | HR_ADMIN |
-| manager1 | Manager@123 | MANAGER |
-| employee1 | Employee@123 | EMPLOYEE |
+| admin | 123456 | HR_ADMIN |
+| manager1 | 123456 | MANAGER |
+| employee1 | 123456 | EMPLOYEE |
 
 ---
 

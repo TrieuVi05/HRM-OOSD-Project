@@ -231,7 +231,7 @@ export default function AdminDashboard() {
     ]
   }), [departmentStats]);
 
-  if (loading) return <div style={{ padding: 32 }}>Đang tải dashboard...</div>;
+  if (loading) return <div style={{ padding: 32 }}>Loading ...</div>;
   if (error) return <div style={{ padding: 32, color: "#dc2626" }}>{error}</div>;
 
   return (

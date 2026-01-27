@@ -26,7 +26,7 @@ export default function AdminLayout() {
           <Link to="/dashboard/admin" style={{ textDecoration: "none" }}>
             <h1 style={{ fontSize: 20, fontWeight: 700, color: '#3b82f6', margin: 0 }}>🏢 HR Admin</h1>
           </Link>
-          <p style={{ margin: "6px 0 0", fontSize: 12, color: "#6b7280" }}>Nhấn logo để về Dashboard</p>
+          <p style={{ margin: "6px 0 0", fontSize: 12, color: "#6b7280" }}>HRM</p>
         </div>
         
         <nav style={{ marginTop: 8 }}>
