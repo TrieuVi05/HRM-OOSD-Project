@@ -22,6 +22,7 @@ import LeavesPage from "./pages/shared/LeavesPage.jsx";
 import PayrollPage from "./pages/shared/PayrollPage.jsx";
 import RecruitmentPage from "./pages/shared/RecruitmentPage.jsx";
 import UsersRolesPage from "./pages/shared/UsersRolesPage.jsx";
+import ContractsPage from "./pages/shared/ContractsPage.jsx";
 
 import "./App.css";
 
@@ -114,6 +115,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
               <RecruitmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/contracts"
+          element={
+            <ProtectedRoute allowedRoles={["HR_ADMIN"]}>
+              <ContractsPage />
             </ProtectedRoute>
           }
         />

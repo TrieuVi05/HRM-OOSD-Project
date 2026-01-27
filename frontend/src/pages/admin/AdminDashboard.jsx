@@ -115,7 +115,10 @@ export default function AdminDashboard() {
   }, [attendance]);
 
   const totalEmployees = employees.length;
-  const presentToday = attendanceToday.filter((item) => normalizeStatus(item.status) === "present").length;
+  const presentToday = attendanceToday.filter((item) => {
+    const status = normalizeStatus(item.status);
+    return status === "present" || status === "late";
+  }).length;
   const attendanceRate = totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 0;
 
   const pendingLeaves = leaves.filter((leave) => {

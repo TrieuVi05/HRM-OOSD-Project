@@ -77,7 +77,10 @@ export default function AttendancePage() {
     [attendance, selectedDate]
   );
 
-  const presentCount = attendanceByDate.filter((item) => normalizeStatus(item.status) === "present").length;
+  const presentCount = attendanceByDate.filter((item) => {
+    const status = normalizeStatus(item.status);
+    return status === "present" || status === "late";
+  }).length;
   const absentCount = attendanceByDate.filter((item) => normalizeStatus(item.status) === "absent").length;
   const lateCount = attendanceByDate.filter((item) => normalizeStatus(item.status) === "late").length;
   const totalEmployees = employees.length || attendanceByDate.length;
