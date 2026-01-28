@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <header style={{ padding: "12px 24px", background: "#ffffff", borderBottom: "1px solid #e5e7eb" }}>
       <nav style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between" }}>
-        <Link to="/" style={{ fontWeight: 700, color: "#1d4ed8", textDecoration: "none" }}>HRM</Link>
+        <Link to="/dashboard/employee" style={{ fontWeight: 700, color: "#1d4ed8", textDecoration: "none" }}>HRM</Link>
         {role ? (
           <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
             <Link to="/employees">Nhân viên</Link>

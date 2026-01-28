@@ -57,7 +57,13 @@ export default function StatsCard({
         margin: '2px 0',
         color: '#1f2937'
       }}>
-        {value}
+        {(() => {
+          if (typeof value === 'number') {
+            const formatted = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(value || 0);
+            return `${formatted}k ₫`;
+          }
+          return value;
+        })()}
       </h3>
       
       <p style={{ 
