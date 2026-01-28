@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 
 import PublicLayout from "./pages/layouts/PublicLayout.jsx";
 import RoleLayout from "./pages/layouts/RoleLayout.jsx";
+import ManagerLayout from "./pages/layouts/ManagerLayout.jsx";
 
 import HomePage from "./pages/public/HomePage.jsx";
 import LoginPage from "./pages/public/LoginPage.jsx";
@@ -13,6 +14,7 @@ import RecruitmentApplyPage from "./pages/public/RecruitmentApplyPage.jsx";
 
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManagerDashboard from "./pages/manager/ManagerDashboard.jsx";
+import ManagerLeavesReview from "./pages/manager/ManagerLeavesReview.jsx";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard.jsx";
 
 import EmployeesPage from "./pages/shared/EmployeesPage.jsx";
@@ -29,6 +31,7 @@ import "./App.css";
 export default function App() {
   return (
     <Routes>
+      {/* ===================== PUBLIC ===================== */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/careers" element={<RecruitmentLandingPage />} />
@@ -38,6 +41,21 @@ export default function App() {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Route>
 
+      {/* ===================== MANAGER (LAYOUT RIÊNG) ===================== */}
+      <Route
+        path="/dashboard/manager"
+        element={
+          <ProtectedRoute allowedRoles={["MANAGER"]}>
+            <ManagerLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ManagerDashboard />} />
+        <Route path="leaves" element={<ManagerLeavesReview />} />
+        {/* <Route path="attendance" element={<ManagerAttendance />} /> */}
+      </Route>
+
+      {/* ===================== PROTECTED (ROLE LAYOUT CHUNG) ===================== */}
       <Route
         element={
           <ProtectedRoute>
@@ -53,14 +71,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/dashboard/manager"
-          element={
-            <ProtectedRoute allowedRoles={["MANAGER"]}>
-              <ManagerDashboard />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/dashboard/employee"
           element={
@@ -78,6 +89,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/departments"
           element={
@@ -86,6 +98,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/attendance"
           element={
@@ -94,6 +107,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/leaves"
           element={
@@ -102,6 +116,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/payroll"
           element={
@@ -110,6 +125,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/recruitment"
           element={
@@ -118,6 +134,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/contracts"
           element={
@@ -126,6 +143,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/manager/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["MANAGER"]}>
+              <AttendancePage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/roles"
           element={
