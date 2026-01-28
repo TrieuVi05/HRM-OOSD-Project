@@ -53,6 +53,9 @@ export const api = {
   getLeaves: (token) => request("/api/leaves", { token }),
   getPayrolls: (token) => request("/api/payroll", { token }),
   getRecruitment: (token) => request("/api/recruitments", { token }),
+  createRecruitment: (token, payload) => request("/api/recruitments", { method: "POST", token, body: payload }),
+  updateRecruitment: (token, id, payload) => request(`/api/recruitments/${id}`, { method: "PUT", token, body: payload }),
+  deleteRecruitment: (token, id) => request(`/api/recruitments/${id}`, { method: "DELETE", token }),
   getContracts: (token) => request("/api/contracts", { token }),
   createContract: (token, payload) =>
     request("/api/contracts", { method: "POST", token, body: payload }),
