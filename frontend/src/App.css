@@ -17,7 +17,6 @@
   background-color: #fbfcff; /* xanh nhạt HRM */
 }
 
-
 .auth-card {
   width: 100%;
   max-width: 420px;
@@ -140,38 +139,33 @@
   font-size: 12px;
 }
 /* ====== AUTH LOGIN UI ====== */
+/* ====== AUTH LOGIN UI ====== */
 .auth-page {
   padding: 0;
 }
 
+/* nền ngoài xanh 1 tone */
 .auth-wrap {
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 28px;
-  position: relative;
-  overflow: hidden;
+  background-color: #e6efff;
+}
 
-  /* nền đẹp hơn */
-  background: linear-gradient(
-  180deg,
-  #f1f5ff 0%,
-  #e6edff 100%
-);
-
-
+/* card */
 .auth-card {
   width: 100%;
   max-width: 440px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.55);
   border-radius: 18px;
   padding: 22px;
   box-shadow: 0 20px 50px rgba(17, 24, 39, 0.12);
   position: relative;
 }
 
+/* viền xanh nhẹ cho card */
 .auth-card::before {
   content: "";
   position: absolute;
@@ -180,9 +174,8 @@
   padding: 2px;
   background: linear-gradient(
     135deg,
-    rgba(59, 130, 246, 0.65),
-    rgba(168, 85, 247, 0.55),
-    rgba(16, 185, 129, 0.45)
+    rgba(37, 99, 235, 0.7),
+    rgba(14, 165, 233, 0.5)
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -202,13 +195,14 @@
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #1d4ed8;
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(37, 99, 235, 0.12);
 }
 
 .auth-title {
   margin: 12px 0 6px;
   font-size: 24px;
   font-weight: 900;
+  color: #0f172a;
 }
 
 .auth-subtitle {
@@ -237,17 +231,13 @@
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.6);
   outline: none;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   font-size: 14px;
-  transition:
-    box-shadow 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.05s ease;
 }
 
 .auth-input:focus {
-  border-color: rgba(59, 130, 246, 0.9);
-  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.15);
+  border-color: rgba(37, 99, 235, 0.9);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
 }
 
 .auth-password-row {
@@ -258,16 +248,12 @@
 
 .auth-ghost {
   border: 1px solid rgba(148, 163, 184, 0.6);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 10px 12px;
   cursor: pointer;
   font-weight: 800;
   color: #0f172a;
-}
-
-.auth-ghost:hover {
-  transform: translateY(-1px);
 }
 
 .auth-error {
@@ -286,17 +272,8 @@
   cursor: pointer;
   font-weight: 900;
   color: #fff;
-  background: linear-gradient(135deg, #2563eb, #2506af);
+  background: linear-gradient(135deg, #1e40af, #2563eb);
   box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    opacity 0.12s ease;
-}
-
-.auth-submit:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
 }
 
 .auth-submit:disabled {
