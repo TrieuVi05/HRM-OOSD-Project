@@ -50,6 +50,14 @@ export default function App() {
     return <LeavesPage />;
   }
 
+  function PayrollRouteSelector() {
+    const { role } = useAuth();
+    if (String(role).toUpperCase().trim() === "EMPLOYEE") {
+      return <EmployeePayrollPage />;
+    }
+    return <PayrollPage />;
+  }
+
   return (
     <Routes>
       {/* ===================== PUBLIC ===================== */}
@@ -153,16 +161,8 @@ export default function App() {
         <Route
           path="/payroll"
           element={
-            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
-              <EmployeePayrollPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/payroll"
-          element={
-            <ProtectedRoute allowedRoles={["HR_ADMIN"]}>
-              <PayrollPage />
+            <ProtectedRoute allowedRoles={["HR_ADMIN", "EMPLOYEE"]}>
+              <PayrollRouteSelector />
             </ProtectedRoute>
           }
         />
