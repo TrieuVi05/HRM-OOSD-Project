@@ -106,5 +106,70 @@ Liên kết tới file tham khảo (workspace-relative)
 
 -- End of document
 
+Danh sách đầy đủ các `entity` (backend/src/main/java/com/hrm/HRM/entity)
+- [Attendance.java](backend/src/main/java/com/hrm/HRM/entity/Attendance.java)
+- [Candidate.java](backend/src/main/java/com/hrm/HRM/entity/Candidate.java)
+- [Contract.java](backend/src/main/java/com/hrm/HRM/entity/Contract.java)
+- [Department.java](backend/src/main/java/com/hrm/HRM/entity/Department.java)
+- [Employee.java](backend/src/main/java/com/hrm/HRM/entity/Employee.java)
+- [Interview.java](backend/src/main/java/com/hrm/HRM/entity/Interview.java)
+- [LeaveRequest.java](backend/src/main/java/com/hrm/HRM/entity/LeaveRequest.java)
+- [Payroll.java](backend/src/main/java/com/hrm/HRM/entity/Payroll.java)
+- [PerformanceReview.java](backend/src/main/java/com/hrm/HRM/entity/PerformanceReview.java)
+- [Position.java](backend/src/main/java/com/hrm/HRM/entity/Position.java)
+- [Recruitment.java](backend/src/main/java/com/hrm/HRM/entity/Recruitment.java)
+- [Role.java](backend/src/main/java/com/hrm/HRM/entity/Role.java)
+- [Timesheet.java](backend/src/main/java/com/hrm/HRM/entity/Timesheet.java)
+- [User.java](backend/src/main/java/com/hrm/HRM/entity/User.java)
+- [UserRole.java](backend/src/main/java/com/hrm/HRM/entity/UserRole.java)
+- [UserRoleId.java](backend/src/main/java/com/hrm/HRM/entity/UserRoleId.java)
+- [WorkSchedule.java](backend/src/main/java/com/hrm/HRM/entity/WorkSchedule.java)
+
+Danh sách các `DTO` chính (backend/src/main/java/com/hrm/HRM/dto)
+- [AttendanceRequest.java](backend/src/main/java/com/hrm/HRM/dto/AttendanceRequest.java)
+- [AttendanceResponse.java](backend/src/main/java/com/hrm/HRM/dto/AttendanceResponse.java)
+- [AttendanceCheckInRequest.java](backend/src/main/java/com/hrm/HRM/dto/AttendanceCheckInRequest.java)
+- [AttendanceCheckOutRequest.java](backend/src/main/java/com/hrm/HRM/dto/AttendanceCheckOutRequest.java)
+- [EmployeeRequest.java](backend/src/main/java/com/hrm/HRM/dto/EmployeeRequest.java)
+- [EmployeeResponse.java](backend/src/main/java/com/hrm/HRM/dto/EmployeeResponse.java)
+- [LeaveRequestRequest.java](backend/src/main/java/com/hrm/HRM/dto/LeaveRequestRequest.java)
+- [LeaveRequestResponse.java](backend/src/main/java/com/hrm/HRM/dto/LeaveRequestResponse.java)
+- [LeaveApprovalRequest.java](backend/src/main/java/com/hrm/HRM/dto/LeaveApprovalRequest.java)
+- [PayrollRequest.java](backend/src/main/java/com/hrm/HRM/dto/PayrollRequest.java)
+- [PayrollResponse.java](backend/src/main/java/com/hrm/HRM/dto/PayrollResponse.java)
+- [PayrollGenerateRequest.java](backend/src/main/java/com/hrm/HRM/dto/PayrollGenerateRequest.java)
+- [ContractRequest.java](backend/src/main/java/com/hrm/HRM/dto/ContractRequest.java)
+- [ContractResponse.java](backend/src/main/java/com/hrm/HRM/dto/ContractResponse.java)
+- [DepartmentRequest.java](backend/src/main/java/com/hrm/HRM/dto/DepartmentRequest.java)
+- [DepartmentResponse.java](backend/src/main/java/com/hrm/HRM/dto/DepartmentResponse.java)
+- [PositionRequest.java](backend/src/main/java/com/hrm/HRM/dto/PositionRequest.java)
+- [PositionResponse.java](backend/src/main/java/com/hrm/HRM/dto/PositionResponse.java)
+- [RecruitmentRequest.java](backend/src/main/java/com/hrm/HRM/dto/RecruitmentRequest.java)
+- [RecruitmentResponse.java](backend/src/main/java/com/hrm/HRM/dto/RecruitmentResponse.java)
+- [PerformanceReviewRequest.java](backend/src/main/java/com/hrm/HRM/dto/PerformanceReviewRequest.java)
+- [PerformanceReviewResponse.java](backend/src/main/java/com/hrm/HRM/dto/PerformanceReviewResponse.java)
+- [CandidateRequest.java](backend/src/main/java/com/hrm/HRM/dto/CandidateRequest.java)
+- [CandidateResponse.java](backend/src/main/java/com/hrm/HRM/dto/CandidateResponse.java)
+- [UserRequest.java](backend/src/main/java/com/hrm/HRM/dto/UserRequest.java)
+- [UserResponse.java](backend/src/main/java/com/hrm/HRM/dto/UserResponse.java)
+- [RoleRequest.java](backend/src/main/java/com/hrm/HRM/dto/RoleRequest.java)
+- [RoleResponse.java](backend/src/main/java/com/hrm/HRM/dto/RoleResponse.java)
+- [AuthRequest.java](backend/src/main/java/com/hrm/HRM/dto/AuthRequest.java)
+- [AuthResponse.java](backend/src/main/java/com/hrm/HRM/dto/AuthResponse.java)
+- [ChangePasswordRequest.java](backend/src/main/java/com/hrm/HRM/dto/ChangePasswordRequest.java)
+- [TimesheetRequest.java](backend/src/main/java/com/hrm/HRM/dto/TimesheetRequest.java)
+- [TimesheetResponse.java](backend/src/main/java/com/hrm/HRM/dto/TimesheetResponse.java)
+- [WorkScheduleRequest.java](backend/src/main/java/com/hrm/HRM/dto/WorkScheduleRequest.java)
+- [WorkScheduleResponse.java](backend/src/main/java/com/hrm/HRM/dto/WorkScheduleResponse.java)
+
 -- End of document
 
+Có — tất cả mục mình thêm đều liên quan tới encapsulation theo nhiều cách khác nhau. Tóm tắt ngắn gọn:
+
+Entities (ví dụ): LeaveRequest, Employee, Payroll — encapsulate state bằng fields private + getters/setters; lifecycle hooks (@PrePersist) tự quản lý trạng thái nội bộ.
+DTOs (ví dụ): LeaveRequestRequest, PayrollRequest — tách dữ liệu đầu vào/ra khỏi entity, ngăn lộ chi tiết nội bộ (boundary for mapping).
+Services / Repositories: hide persistence/transaction logic; controller gọi service thay vì truy xuất DB trực tiếp (API layer ≈ encapsulation of persistence).
+API wrapper: api.js — đóng gói HTTP (headers, error handling), che giấu chi tiết mạng khỏi components.
+Context: AuthContext.jsx — encapsulates auth state (token, user, role) và helper, cung cấp 1 interface duy nhất cho toàn app.
+Components / Hooks: EmployeeLeavesPage.jsx, EmployeeAttendancePage.jsx — giữ state cục bộ, expose chỉ những callback/props cần thiết; không để state nội bộ lọt ra ngoài.
+Mapping / Naming (JSON ↔ Java): chuẩn hóa/@JsonProperty/naming strategy là phần của encapsulation vì tránh rò rỉ chi tiết DB/schema lên client.

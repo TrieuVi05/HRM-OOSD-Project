@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
 import PublicLayout from "./pages/layouts/PublicLayout.jsx";
 import RoleLayout from "./pages/layouts/RoleLayout.jsx";
@@ -33,6 +34,14 @@ import WorkSchedulePage from "./pages/shared/WorkSchedulePage.jsx";
 import "./App.css";
 
 export default function App() {
+  function AttendanceRouteSelector() {
+    const { role } = useAuth();
+    if (String(role).toUpperCase().trim() === "EMPLOYEE") {
+      return <EmployeeAttendancePage />;
+    }
+    return <AttendancePage />;
+  }
+
   return (
     <Routes>
       {/* ===================== PUBLIC ===================== */}
@@ -103,21 +112,12 @@ export default function App() {
           }
         />
 
-        {/* Employee custom attendance page */}
+        {/* Attendance - shared route for all roles (component shows role-specific view) */}
         <Route
           path="/attendance"
           element={
-            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
-              <EmployeeAttendancePage />
-            </ProtectedRoute>
-          }
-        />
-        {/* Shared attendance page for admin/manager */}
-        <Route
-          path="/attendance"
-          element={
-            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
-              <AttendancePage />
+            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER", "EMPLOYEE"]}>
+              <AttendanceRouteSelector />
             </ProtectedRoute>
           }
         />
