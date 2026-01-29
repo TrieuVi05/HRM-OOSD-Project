@@ -42,6 +42,14 @@ export default function App() {
     return <AttendancePage />;
   }
 
+  function LeavesRouteSelector() {
+    const { role } = useAuth();
+    if (String(role).toUpperCase().trim() === "EMPLOYEE") {
+      return <EmployeeLeavesPage />;
+    }
+    return <LeavesPage />;
+  }
+
   return (
     <Routes>
       {/* ===================== PUBLIC ===================== */}
@@ -132,29 +140,21 @@ export default function App() {
         />
 
 
-        {/* Employee custom pages */}
+        {/* Leaves - shared route for all roles (selector renders employee or admin view) */}
         <Route
           path="/leaves"
           element={
-            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
-              <EmployeeLeavesPage />
+            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER", "EMPLOYEE"]}>
+              <LeavesRouteSelector />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/payroll"
           element={
             <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
               <EmployeePayrollPage />
-            </ProtectedRoute>
-          }
-        />
-        {/* Shared pages for admin/manager only */}
-        <Route
-          path="/leaves"
-          element={
-            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
-              <LeavesPage />
             </ProtectedRoute>
           }
         />
