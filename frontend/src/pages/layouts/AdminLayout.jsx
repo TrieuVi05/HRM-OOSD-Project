@@ -13,6 +13,7 @@ export default function AdminLayout() {
   const menuItems = [
     { path: "/employees", label: "Nhân viên", icon: "👥" },
     { path: "/attendance", label: "Chấm công", icon: "⏰" },
+    { path: "/work-schedules", label: "Lịch làm việc", icon: "📅" },
     { path: "/leaves", label: "Nghỉ phép", icon: "🏖️" },
     { path: "/recruitment", label: "Tuyển dụng", icon: "📝" },
     { path: "/payroll", label: "Lương", icon: "💰" },

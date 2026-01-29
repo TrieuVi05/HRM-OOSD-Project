@@ -1,6 +1,7 @@
 package com.hrm.HRM.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,5 +40,11 @@ public class LeaveRequest {
 
     @Column(name = "created_at")
     private Instant createdAt;
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 }
 

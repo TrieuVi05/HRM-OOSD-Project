@@ -78,6 +78,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
+        // remove any user-role links first to avoid foreign key constraint errors
+        userRoleRepository.deleteByIdUserId(id);
         repository.deleteById(id);
     }
 

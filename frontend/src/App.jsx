@@ -16,6 +16,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManagerDashboard from "./pages/manager/ManagerDashboard.jsx";
 import ManagerLeavesReview from "./pages/manager/ManagerLeavesReview.jsx";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard.jsx";
+import EmployeePayrollPage from "./pages/employee/EmployeePayrollPage.jsx";
+import EmployeeLeavesPage from "./pages/employee/EmployeeLeavesPage.jsx";
 
 import EmployeesPage from "./pages/shared/EmployeesPage.jsx";
 import DepartmentsPage from "./pages/shared/DepartmentsPage.jsx";
@@ -25,6 +27,7 @@ import PayrollPage from "./pages/shared/PayrollPage.jsx";
 import RecruitmentPage from "./pages/shared/RecruitmentPage.jsx";
 import UsersRolesPage from "./pages/shared/UsersRolesPage.jsx";
 import ContractsPage from "./pages/shared/ContractsPage.jsx";
+import WorkSchedulePage from "./pages/shared/WorkSchedulePage.jsx";
 
 import "./App.css";
 
@@ -109,18 +112,45 @@ export default function App() {
         />
 
         <Route
-          path="/leaves"
+          path="/work-schedules"
           element={
             <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER", "EMPLOYEE"]}>
-              <LeavesPage />
+              <WorkSchedulePage />
             </ProtectedRoute>
           }
         />
 
+
+        {/* Employee custom pages */}
+        <Route
+          path="/leaves"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <EmployeeLeavesPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/payroll"
           element={
-            <ProtectedRoute allowedRoles={["HR_ADMIN", "EMPLOYEE"]}>
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <EmployeePayrollPage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Shared pages for admin/manager only */}
+        <Route
+          path="/leaves"
+          element={
+            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
+              <LeavesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payroll"
+          element={
+            <ProtectedRoute allowedRoles={["HR_ADMIN"]}>
               <PayrollPage />
             </ProtectedRoute>
           }

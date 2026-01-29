@@ -30,7 +30,12 @@ export default function LoginPage() {
 
       navigate(roleToPath[data.role] || "/dashboard/employee");
     } catch (err) {
-      setError(err?.message || "Login failed");
+      const msg = (err && err.message) ? err.message : "";
+      if (msg.toLowerCase().includes("bad credentials")) {
+        setError("Sai tên đăng nhập hoặc mật khẩu");
+      } else {
+        setError(msg || "Đăng nhập thất bại");
+      }
     } finally {
       setLoading(false);
     }

@@ -9,17 +9,8 @@ export default function Header() {
       <nav style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between" }}>
         <Link to="/dashboard/employee" style={{ fontWeight: 700, color: "#1d4ed8", textDecoration: "none" }}>HRM</Link>
         {role ? (
-          <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-            <Link to="/employees">Nhân viên</Link>
-            <Link to="/departments">Phòng ban</Link>
-            <Link to="/attendance">Chấm công</Link>
-            <Link to="/leaves">Nghỉ phép</Link>
-            <Link to="/payroll">Lương</Link>
-            <Link to="/recruitment">Tuyển dụng</Link>
-            {role === "HR_ADMIN" && <Link to="/dashboard/admin">Dashboard</Link>}
-            {role === "MANAGER" && <Link to="/dashboard/manager">Dashboard</Link>}
-            {role === "EMPLOYEE" && <Link to="/dashboard/employee">Dashboard</Link>}
-          </div>
+          // Authenticated users use the sidebar for navigation; keep header minimal
+          <div />
         ) : (
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <Link to="/careers">Tuyển dụng</Link>

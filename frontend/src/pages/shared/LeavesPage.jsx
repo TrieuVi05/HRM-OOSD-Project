@@ -11,7 +11,7 @@ function normalizeStatus(status) {
 }
 
 export default function LeavesPage() {
-  const { token, role } = useAuth();
+  const { token, role, user } = useAuth();
 
   const canApprove = role === "HR_ADMIN" || role === "MANAGER";
 
@@ -32,7 +32,15 @@ export default function LeavesPage() {
     Promise.all([api.getLeaves(token), api.getEmployees(token)])
       .then(([leavesData, employeesData]) => {
         if (ignore) return;
-        setItems(leavesData || []);
+        let filteredLeaves = leavesData || [];
+        if (role === "EMPLOYEE" && user) {
+          let userObj = user;
+          if (typeof user === "string") {
+            try { userObj = JSON.parse(user); } catch {}
+          }
+          filteredLeaves = filteredLeaves.filter(lv => lv.employeeId === userObj?.id);
+        }
+        setItems(filteredLeaves);
         setEmployees(employeesData || []);
       })
       .catch((err) => {
@@ -46,7 +54,7 @@ export default function LeavesPage() {
     return () => {
       ignore = true;
     };
-  }, [token]);
+  }, [token, role, user]);
 
   const employeeMap = useMemo(() => {
     const map = new Map();

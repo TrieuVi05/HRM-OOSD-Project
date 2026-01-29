@@ -15,19 +15,66 @@ async function request(path, { method = "GET", token, body } = {}) {
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
+  // Read body as text first to handle empty responses (e.g., DELETE returning empty body)
+  const text = await res.text();
+  let parsed = null;
+  if (text) {
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      // If response is not JSON, keep raw text
+      parsed = text;
+    }
+  }
+
   if (!res.ok) {
     let errorMessage = `Request failed (${res.status})`;
     try {
-      const err = await res.json();
-      errorMessage = err.message || errorMessage;
+      const err = parsed;
+      // extract raw message or assemble from errors array
+      let raw = err && (err.message || err.error || "");
+      if (!raw && err && Array.isArray(err.errors)) {
+        raw = err.errors.map((e) => e.defaultMessage || e.message || JSON.stringify(e)).join("; ");
+      }
+
+      const translateValidation = (msg) => {
+        if (!msg) return msg;
+        const lower = String(msg).toLowerCase();
+        if (lower.includes("bad credentials")) return "Sai tên đăng nhập hoặc mật khẩu";
+        if (lower.includes("validation failed for argument")) return "Bạn chưa nhập Username";
+        if (lower.includes("must be a well-formed email address") || lower.includes("well-formed email")) return "Email không hợp lệ";
+        if (lower.includes("must not be null") || lower.includes("must not be blank") || lower.includes("not be empty")) return "Trường bắt buộc, không được để trống";
+
+        const fieldMatch = msg.match(/on field '([^']+)'/i);
+        const defaultMatch = msg.match(/default message \[([^\]]+)\]/i);
+        if (fieldMatch && defaultMatch) {
+          const field = fieldMatch[1];
+          const def = defaultMatch[1];
+          const fieldNames = { email: 'Email', username: 'Tên đăng nhập', fullName: 'Họ và tên', phone: 'Số điện thoại' };
+          let defTranslated = def;
+          if (/well-formed email/i.test(def)) defTranslated = 'phải là địa chỉ email hợp lệ';
+          else if (/size must be between (\d+) and (\d+)/i.test(def)) {
+            const m = def.match(/size must be between (\d+) and (\d+)/i);
+            defTranslated = `độ dài phải từ ${m[1]} đến ${m[2]}`;
+          } else if (/must not be null/i.test(def) || /must not be blank/i.test(def)) defTranslated = 'không được để trống';
+          else if (/pattern/i.test(def)) defTranslated = 'không đúng định dạng';
+          return `Trường '${fieldNames[field] || field}' không hợp lệ: ${defTranslated}`;
+        }
+
+        if (lower.includes('email')) return 'Chưa nhập email hoặc email không hợp lệ';
+        return msg;
+      };
+
+      const translated = translateValidation(raw || (err && (err.message || err.error)));
+      errorMessage = translated || errorMessage;
     } catch {
-      // ignore
+      // ignore parsing errors
     }
     throw new Error(errorMessage);
   }
 
   if (res.status === 204) return null;
-  return res.json();
+  return parsed;
 }
 
 export const api = {
@@ -51,6 +98,7 @@ export const api = {
     request(`/api/departments/${id}`, { method: "DELETE", token }),
   getAttendance: (token) => request("/api/attendance", { token }),
   getLeaves: (token) => request("/api/leaves", { token }),
+  createLeave: (token, payload) => request("/api/leaves", { method: "POST", token, body: payload }),
   getPayrolls: (token) => request("/api/payroll", { token }),
   getRecruitment: (token) => request("/api/recruitments", { token }),
   createRecruitment: (token, payload) => request("/api/recruitments", { method: "POST", token, body: payload }),
@@ -96,4 +144,9 @@ export const api = {
       token,
       body: payload,
     }),
+  // Work schedules
+  getWorkSchedules: (token) => request('/api/work-schedules', { token }),
+  createWorkSchedule: (token, payload) => request('/api/work-schedules', { method: 'POST', token, body: payload }),
+  updateWorkSchedule: (token, id, payload) => request(`/api/work-schedules/${id}`, { method: 'PUT', token, body: payload }),
+  deleteWorkSchedule: (token, id) => request(`/api/work-schedules/${id}`, { method: 'DELETE', token }),
 };

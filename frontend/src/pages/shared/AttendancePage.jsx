@@ -31,7 +31,7 @@ function calcHours(checkIn, checkOut) {
 }
 
 export default function AttendancePage() {
-  const { token } = useAuth();
+  const { token, role, user } = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -72,9 +72,19 @@ export default function AttendancePage() {
     return map;
   }, [employees]);
 
+  // Only show self data for EMPLOYEE
   const attendanceByDate = useMemo(
-    () => attendance.filter((item) => item?.workDate === selectedDate),
-    [attendance, selectedDate]
+    () => attendance.filter((item) => {
+      if (role === "EMPLOYEE" && user) {
+        let userObj = user;
+        if (typeof user === "string") {
+          try { userObj = JSON.parse(user); } catch {}
+        }
+        return item?.workDate === selectedDate && item.employeeId === userObj?.id;
+      }
+      return item?.workDate === selectedDate;
+    }),
+    [attendance, selectedDate, role, user]
   );
 
   const presentCount = attendanceByDate.filter((item) => {
@@ -86,10 +96,17 @@ export default function AttendancePage() {
   const totalEmployees = employees.length || attendanceByDate.length;
   const attendanceRate = totalEmployees > 0 ? Math.round((presentCount / totalEmployees) * 100) : 0;
 
-  const pendingLeaves = leaves.filter((leave) => {
+  const pendingLeaves = useMemo(() => leaves.filter((leave) => {
+    if (role === "EMPLOYEE" && user) {
+      let userObj = user;
+      if (typeof user === "string") {
+        try { userObj = JSON.parse(user); } catch {}
+      }
+      if (leave.employeeId !== userObj?.id) return false;
+    }
     const status = (leave?.status || "").toLowerCase();
     return status === "pending" || status.includes("pending") || status.includes("chờ");
-  });
+  }), [leaves, role, user]);
 
   const issuesToday = attendanceByDate.filter((item) => {
     const status = normalizeStatus(item.status);

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -41,6 +42,7 @@ export default function AdminDashboard() {
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [payrolls, setPayrolls] = useState([]);
+  const [workSchedules, setWorkSchedules] = useState([]);
 
   useEffect(() => {
     let ignore = false;
@@ -51,14 +53,16 @@ export default function AdminDashboard() {
       api.getEmployees(token),
       api.getAttendance(token),
       api.getLeaves(token),
-      api.getPayrolls(token)
+      api.getPayrolls(token),
+      api.getWorkSchedules(token)
     ])
-      .then(([employeesData, attendanceData, leavesData, payrollsData]) => {
+      .then(([employeesData, attendanceData, leavesData, payrollsData, schedulesData]) => {
         if (ignore) return;
         setEmployees(employeesData || []);
         setAttendance(attendanceData || []);
         setLeaves(leavesData || []);
         setPayrolls(payrollsData || []);
+        setWorkSchedules(schedulesData || []);
       })
       .catch((err) => {
         if (!ignore) setError(err.message || "Không thể tải dữ liệu dashboard");
@@ -240,14 +244,17 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ padding: 8 }}>
-      <h1 style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>Tổng quan Dashboard</h1>
+      <h1 style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>HR Admin</h1>
       <p style={{ color: "#6b7280", marginBottom: 8, fontSize: 10 }}>Chào mừng bạn! Đây là tình hình hôm nay.</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 6 }}>
-        <StatsCard title="Tổng nhân viên" value={totalEmployees} icon="👥" color="blue" />
+        <StatsCard title="Tổng nhân viên" value={`${totalEmployees}`} icon="👥" color="blue" />
         <StatsCard title="Chấm công hôm nay" value={`${presentToday}/${totalEmployees}`} icon="⏰" color="green" trend="up" trendValue={`${attendanceRate}%`} />
-        <StatsCard title="Yêu cầu nghỉ phép" value={pendingLeaves.length} icon="📌" color="yellow" />
+        <StatsCard title="Yêu cầu nghỉ phép" value={`${pendingLeaves.length}`} icon="📌" color="yellow" />
         <StatsCard title="Tổng lương (tháng)" value={formatCurrency(totalPayrollMonthly)} icon="💰" color="purple" />
+        <Link to="/work-schedules" style={{ textDecoration: "none" }}>
+          <StatsCard title="Lịch làm việc" value={`${workSchedules.length}`} icon="📅" color="blue" />
+        </Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 6, marginTop: 8 }}>

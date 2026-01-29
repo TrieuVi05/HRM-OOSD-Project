@@ -8,7 +8,7 @@ export default function PublicLayout() {
 
   return (
     <div className="app-root">
-      {!isLoginPage && <Header />}
+      <Header />
       <main className={isLoginPage ? "app-content auth-page" : "app-content"}>
         <Outlet />
       </main>

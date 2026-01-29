@@ -16,7 +16,7 @@ function toMonthValue(date) {
 }
 
 export default function PayrollPage() {
-  const { token } = useAuth();
+  const { token, role, user } = useAuth();
   const [items, setItems] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState("");
@@ -53,12 +53,20 @@ export default function PayrollPage() {
   }, [employees]);
 
   const filteredItems = useMemo(() => {
-    if (!selectedMonth) return items;
-    return items.filter((payroll) => {
+    let filtered = items;
+    if (role === "EMPLOYEE" && user) {
+      let userObj = user;
+      if (typeof user === "string") {
+        try { userObj = JSON.parse(user); } catch {}
+      }
+      filtered = filtered.filter(item => item.employeeId === userObj?.id);
+    }
+    if (!selectedMonth) return filtered;
+    return filtered.filter((payroll) => {
       const dateValue = payroll?.periodStart || payroll?.generatedAt;
       return toMonthValue(dateValue) === selectedMonth;
     });
-  }, [items, selectedMonth]);
+  }, [items, selectedMonth, role, user]);
 
   const totals = filteredItems.reduce(
     (sum, payroll) => {

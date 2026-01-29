@@ -10,6 +10,8 @@ export default function EmployeesPage() {
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
   const [error, setError] = useState("");
+  const [employeeError, setEmployeeError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("employees");
 
@@ -189,10 +191,13 @@ export default function EmployeesPage() {
     const confirmed = window.confirm("Xóa nhân viên này?");
     if (!confirmed) return;
     setSaving(true);
-    setError("");
+    setEmployeeError("");
     try {
       await api.deleteEmployee(token, row.id);
       await loadData();
+      setError("");
+      setEmployeeError("");
+      setSuccessMessage("Xóa nhân viên thành công");
     } catch (err) {
       setError(err.message || "Failed to delete employee");
     } finally {
@@ -217,9 +222,10 @@ export default function EmployeesPage() {
     if (!confirmed) return;
     setSaving(true);
     setError("");
-    try {
-      await api.deleteDepartment(token, row.id);
-      await loadData();
+        try {
+          await api.deleteDepartment(token, row.id);
+          await loadData();
+          setError("");
     } catch (err) {
       setError(err.message || "Failed to delete department");
     } finally {
@@ -245,13 +251,14 @@ export default function EmployeesPage() {
     if (!confirmed) return;
     setSaving(true);
     setError("");
-    try {
-      await api.deletePosition(token, row.id);
-      await loadData();
-    } catch (err) {
-      setError(err.message || "Failed to delete position");
-    } finally {
-      setSaving(false);
+        try {
+          await api.deletePosition(token, row.id);
+          await loadData();
+          setError("");
+        } catch (err) {
+          setError(err.message || "Failed to delete position");
+        } finally {
+          setSaving(false);
     }
   };
 
@@ -293,9 +300,11 @@ export default function EmployeesPage() {
 
       setEmployeeModalOpen(false);
       resetEmployeeForm();
+      setEmployeeError("");
+      setSuccessMessage(editingEmployeeId ? "Cập nhật nhân viên thành công" : "Thêm nhân viên thành công");
       await loadData();
     } catch (err) {
-      setError(err.message || "Failed to add employee");
+      setEmployeeError(err.message || "Failed to add employee");
     } finally {
       setSaving(false);
     }
@@ -317,6 +326,7 @@ export default function EmployeesPage() {
       }
       setDepartmentModalOpen(false);
       resetDepartmentForm();
+      setSuccessMessage(editingDepartmentId ? "Cập nhật phòng ban thành công" : "Thêm phòng ban thành công");
       await loadData();
     } catch (err) {
       setError(err.message || "Failed to add department");
@@ -341,6 +351,7 @@ export default function EmployeesPage() {
       }
       setPositionModalOpen(false);
       resetPositionForm();
+      setSuccessMessage(editingPositionId ? "Cập nhật vị trí thành công" : "Thêm vị trí thành công");
       await loadData();
     } catch (err) {
       setError(err.message || "Failed to add position");
@@ -349,15 +360,35 @@ export default function EmployeesPage() {
     }
   };
 
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (!successMessage) return undefined;
+    const t = setTimeout(() => setSuccessMessage(""), 3000);
+    return () => clearTimeout(t);
+  }, [successMessage]);
+
   if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
-  if (error) return <div style={{ padding: 10, color: "#b91c1c" }}>{error}</div>;
 
   return (
     <div style={{ padding: 10 }}>
+      {successMessage && (
+        <div style={{ position: "fixed", top: 16, right: 16, background: "#16a34a", color: "#fff", padding: "10px 14px", borderRadius: 8, boxShadow: "0 6px 18px rgba(0,0,0,0.12)", zIndex: 60 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ fontSize: 13 }}>{successMessage}</div>
+            <button onClick={() => setSuccessMessage("")} style={{ background: "transparent", border: "none", color: "#fff", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>×</button>
+          </div>
+        </div>
+      )}
       <h1 style={{ fontSize: 16, marginBottom: 5 }}>Employee & Organization Management</h1>
       <p style={{ color: "#6b7280", marginBottom: 13, fontSize: 10 }}>
         Manage employees, departments, and positions
       </p>
+
+      {error && (
+        <div style={{ color: "#b91c1c", padding: 8, borderRadius: 6, background: "#fff5f5", border: "1px solid #fee2e2", marginBottom: 12 }}>
+          {error}
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
         {[
@@ -472,10 +503,21 @@ export default function EmployeesPage() {
         onClose={() => {
           setEmployeeModalOpen(false);
           resetEmployeeForm();
+          setEmployeeError("");
         }}
         title={editingEmployeeId ? "Edit Employee" : "Add New Employee"}
       >
         <div style={{ display: "grid", gap: 10 }}>
+            {employeeError && (
+            <div style={{ color: "#b91c1c", padding: 8, borderRadius: 6, background: "#fff5f5", border: "1px solid #fee2e2" }}>
+              {employeeError}
+            </div>
+          )}
+            {error && (
+              <div style={{ color: "#b91c1c", padding: 8, borderRadius: 6, background: "#fff5f5", border: "1px solid #fee2e2" }}>
+                {error}
+              </div>
+            )}
           <label style={{ display: "grid", gap: 6 }}>
             Username
             <input
@@ -560,6 +602,7 @@ export default function EmployeesPage() {
             onClick={() => {
               setEmployeeModalOpen(false);
               resetEmployeeForm();
+              setEmployeeError("");
             }}
             style={{ padding: "6px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12 }}
           >
