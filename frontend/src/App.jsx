@@ -18,6 +18,7 @@ import ManagerLeavesReview from "./pages/manager/ManagerLeavesReview.jsx";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard.jsx";
 import EmployeePayrollPage from "./pages/employee/EmployeePayrollPage.jsx";
 import EmployeeLeavesPage from "./pages/employee/EmployeeLeavesPage.jsx";
+import EmployeeAttendancePage from "./pages/employee/EmployeeAttendancePage.jsx";
 
 import EmployeesPage from "./pages/shared/EmployeesPage.jsx";
 import DepartmentsPage from "./pages/shared/DepartmentsPage.jsx";
@@ -102,10 +103,20 @@ export default function App() {
           }
         />
 
+        {/* Employee custom attendance page */}
         <Route
           path="/attendance"
           element={
-            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER", "EMPLOYEE"]}>
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <EmployeeAttendancePage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Shared attendance page for admin/manager */}
+        <Route
+          path="/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["HR_ADMIN", "MANAGER"]}>
               <AttendancePage />
             </ProtectedRoute>
           }
