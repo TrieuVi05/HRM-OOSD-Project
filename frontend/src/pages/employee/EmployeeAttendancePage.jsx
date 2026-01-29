@@ -57,6 +57,35 @@ export default function EmployeeAttendancePage() {
     return attendance.filter((a) => String(a.employeeId) === String(currentEmployee.id));
   }, [attendance, currentEmployee]);
 
+  // Helper to format time as HH:mm
+  function formatTime(val) {
+    if (!val) return "-";
+    // Accepts: '2026-01-01T08:15:00' or '08:15:00' or '08:15'
+    if (val.length === 5) return val;
+    if (val.length >= 8 && val[2] === ':' && val[5] === ':') return val.slice(0, 5);
+    if (val.includes('T')) {
+      const t = val.split('T')[1];
+      return t ? t.slice(0, 5) : '-';
+    }
+    return val;
+  }
+
+  // Helper to get status detail
+  function getStatusDetail(a) {
+    if ((a.status || '').toUpperCase() === 'ABSENT') return 'Vắng mặt';
+    if (!a.checkIn) return 'Vắng mặt';
+    // Giả sử giờ chuẩn là 08:15 vào, 17:30 ra
+    const standardIn = '08:15';
+    const standardOut = '17:30';
+    const inTime = formatTime(a.checkIn);
+    const outTime = formatTime(a.checkOut);
+    let detail = '';
+    if (inTime > standardIn) detail += 'Đi trễ';
+    if (outTime && outTime < standardOut) detail += (detail ? ', ' : '') + 'Về sớm';
+    if (!detail) detail = 'Đúng giờ';
+    return detail;
+  }
+
   const totalDays = attendanceForEmployee.length;
   const presentDays = attendanceForEmployee.filter((a) => (a.status || "").toUpperCase() === "PRESENT").length;
   const absentDays = attendanceForEmployee.filter((a) => (a.status || "").toUpperCase() === "ABSENT").length;
@@ -113,10 +142,11 @@ export default function EmployeeAttendancePage() {
                   return (
                     <tr key={a.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
                       <td style={{ padding: 8 }}>{a.workDate || "-"}</td>
-                      <td style={{ padding: 8 }}>{a.checkIn ? a.checkIn.slice(0, 5) : "-"}</td>
-                      <td style={{ padding: 8 }}>{a.checkOut ? a.checkOut.slice(0, 5) : "-"}</td>
+                      <td style={{ padding: 8 }}>{formatTime(a.checkIn)}</td>
+                      <td style={{ padding: 8 }}>{formatTime(a.checkOut)}</td>
                       <td style={{ padding: 8, textAlign: "center" }}>
                         <span style={{ background: statusStyle.bg, color: statusStyle.color, borderRadius: 8, padding: "2px 10px", fontSize: 12 }}>{statusStyle.text}</span>
+                        <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{getStatusDetail(a)}</div>
                       </td>
                       <td style={{ padding: 8 }}>{a.note || "-"}</td>
                     </tr>
